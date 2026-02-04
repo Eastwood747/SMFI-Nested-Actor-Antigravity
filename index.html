@@ -1228,7 +1228,6 @@
                     <div class="lof-grid">
                         ${renderHolon('self_ideel', null, null)}
                         ${actors.map(actor => renderHolon('actor_ideel', actor.name, null, actor.id)).join('')}
-                        ${actors.map(actor => renderHolon('actor_skygge', actor.name, null, actor.id, true)).join('')}
                     </div>
                 </div>
             `;
@@ -1660,7 +1659,6 @@
             addHolonToExport(lines, 'self_ideel', 'self', null, null);
             actors.forEach(actor => {
                 addHolonToExport(lines, 'actor_ideel', actor.id, actor.name, null);
-                addHolonToExport(lines, 'actor_skygge', actor.id, actor.name, null);
             });
 
             lines.push('───────────────────────────────────────────────────────────────');
