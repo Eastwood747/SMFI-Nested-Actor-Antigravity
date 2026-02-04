@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMFI Visual Mapper v. 3.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            min-height: 100vh;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 2rem; }
+        }
+
+        ::selection {
+            background-color: #e0e7ff;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: calc(100vh - 4rem);
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1.25rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brain-icon {
+            padding: 0.625rem;
+            background: #4f46e5;
+            border-radius: 0.75rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            display: flex;
+        }
+
+        .header-title {
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .header-title span {
+            font-size: 9px;
+            font-style: normal;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-left: 0.5rem;
+        }
+
+        .operator-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .operator-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .operator-input {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4f46e5;
+            background: #eef2ff;
+            padding: 0.25rem 0.625rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e0e7ff;
+            outline: none;
+            width: 5rem;
+            transition: all 0.2s;
+        }
+
+        .operator-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 1rem;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            flex: 1;
+            background: #e8eaed;
+            border-radius: 1.25rem;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+            background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .canvas-container.panning {
+            cursor: grabbing;
+        }
+
+        /* Canvas */
+        .canvas {
+            position: absolute;
+            left: 40px;
+            top: 40px;
+            transform-origin: 0 0;
+            background: white;
+            padding: 2rem;
+            min-width: 800px;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .zoom-btn:hover {
+            background: #f8fafc;
+            color: #4f46e5;
+            border-color: #c7d2fe;
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+
+        .zoom-level {
+            text-align: center;
+            font-size: 9px;
+            font-weight: 700;
+            color: #64748b;
+            background: white;
+            padding: 0.375rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Section styling */
+        .main-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Operator Self Model */
+        .self-model-section {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .self-model-box {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        /* Actor Models Container */
+        .actor-models-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        /* Actor Model Card */
+        .actor-model {
+            background: linear-gradient(135deg, #fafaff 0%, #f0f4ff 100%);
+            border: 2px solid #c7d2fe;
+            border-radius: 1.25rem;
+            padding: 1rem;
+            min-width: 400px;
+            max-width: 700px;
+            flex: 1;
+            height: auto;
+        }
+
+        .actor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e0e7ff;
+        }
+
+        .actor-name-input {
+            font-size: 13px;
+            font-weight: 800;
+            color: #4f46e5;
+            background: white;
+            border: 1px solid #c7d2fe;
+            border-radius: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            outline: none;
+            width: 120px;
+        }
+
+        .actor-name-input:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .actor-notation {
+            font-size: 10px;
+            font-weight: 700;
+            color: #6366f1;
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid #e0e7ff;
+        }
+
+        .actor-delete-btn {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .actor-delete-btn:hover {
+            background: #fecaca;
+        }
+
+        /* Actor direct model */
+        .actor-direct-model {
+            background: white;
+            border: 1px solid #e0e7ff;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Nested sections */
+        .nested-section {
+            margin-bottom: 0.75rem;
+        }
+
+        .nested-section-label {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 8px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .nested-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            align-items: start;
+        }
+
+        .nested-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nested-threshold {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0;
+            margin: 0.5rem 0;
+            position: relative;
+        }
+
+        .nested-threshold::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            border-top: 1px dashed #c7d2fe;
+        }
+
+        .nested-threshold-label {
+            background: #f0f4ff;
+            padding: 0.125rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 7px;
+            font-weight: 800;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            position: relative;
+            border: 1px solid #e0e7ff;
+        }
+
+        /* Sub-actors section */
+        .sub-actors-section {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed #c7d2fe;
+        }
+
+        .sub-actor {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .sub-actor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-actor-name-input {
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.25rem 0.5rem;
+            outline: none;
+            width: 100px;
+        }
+
+        /* Add buttons */
+        .add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px dashed #c7d2fe;
+            border-radius: 0.75rem;
+            color: #6366f1;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 160px;
+            min-height: 80px;
+        }
+
+        .add-btn:hover {
+            background: #f0f4ff;
+            border-color: #818cf8;
+        }
+
+        .add-btn-small {
+            padding: 0.375rem 0.75rem;
+            min-width: auto;
+            min-height: auto;
+            font-size: 10px;
+            border-radius: 0.5rem;
+        }
+
+        /* Holon Box */
+        .holon-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.625rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 70px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+        }
+
+        .holon-box:hover {
+            border-color: #a5b4fc;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .holon-box.active {
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            background: #fafaff;
+        }
+
+        .holon-box.shadow-type {
+            background: #fffbfb;
+            border-color: #fecdd3;
+        }
+
+        .holon-box.shadow-type:hover {
+            border-color: #fda4af;
+        }
+
+        .holon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.375rem;
+        }
+
+        .holon-notation {
+            font-size: 10px;
+            font-weight: 800;
+            color: #475569;
+            letter-spacing: -0.02em;
+        }
+
+        .holon-box.active .holon-notation {
+            color: #4f46e5;
+        }
+
+        .holon-box.shadow-type .holon-notation {
+            color: #e11d48;
+        }
+
+        .holon-status {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+
+        .holon-box.active .holon-status {
+            background: #6366f1;
+        }
+
+        .holon-description {
+            font-size: 9px;
+            color: #64748b;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .holon-box.shadow-type .holon-description {
+            color: #be185d;
+        }
+
+        .holon-notes-preview {
+            margin-top: 0.5rem;
+            padding-top: 0.375rem;
+            border-top: 1px solid #f1f5f9;
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        .holon-notes-preview ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .holon-notes-preview li {
+            border-left: 2px solid #c7d2fe;
+            padding-left: 0.5rem;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .shadow-badge {
+            font-size: 6px;
+            font-weight: 800;
+            color: #f43f5e;
+            background: #fff1f2;
+            padding: 0.125rem 0.375rem;
+            border-radius: 9999px;
+            border: 1px solid #fecdd3;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Threshold Divider */
+        .threshold {
+            position: relative;
+            padding: 1rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .threshold::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 2px;
+            border-top: 2px dashed #cbd5e1;
+        }
+
+        .threshold-label {
+            position: relative;
+            background: white;
+            padding: 0.375rem 1.5rem;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            font-size: 9px;
+            font-weight: 800;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* LOF Section */
+        .lof-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            align-items: start;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background: white;
+            border-radius: 1.25rem;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            transition: width 0.3s ease, opacity 0.2s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 0;
+            opacity: 0;
+        }
+
+        .detail-panel.open {
+            width: 360px;
+            opacity: 1;
+        }
+
+        .detail-inner {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            min-width: 360px;
+        }
+
+        .detail-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafbfc;
+            flex-shrink: 0;
+        }
+
+        .detail-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-title {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #4f46e5;
+            letter-spacing: -0.02em;
+        }
+
+        .detail-subtitle {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.125rem;
+        }
+
+        .close-btn {
+            padding: 0.375rem;
+            background: transparent;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .info-box {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e0e7ff;
+        }
+
+        .info-box p {
+            font-size: 11px;
+            font-style: italic;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem;
+        }
+
+        .detail-label {
+            font-size: 9px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-textarea {
+            width: 100%;
+            min-height: 250px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            font-size: 12px;
+            color: #334155;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .detail-textarea:focus {
+            border-color: #c7d2fe;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 0.75rem;
+            font-size: 8px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 0.75rem;
+        }
+
+        /* Icons */
+        .icon { width: 20px; height: 20px; }
+        .icon-sm { width: 12px; height: 12px; }
+        .icon-xs { width: 10px; height: 10px; }
+
+        .text-amber { color: #f59e0b; }
+        .fill-amber { fill: #f59e0b; }
+        .text-indigo { color: #6366f1; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="brain-icon">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+                        <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+                        <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="header-title">SMFI NESTED ACTOR MAPPER <span>v. 3.0</span></h1>
+                    <div class="operator-row">
+                        <span class="operator-label">Primær Operatør:</span>
+                        <input type="text" id="primaryName" value="Jacob" class="operator-input">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Canvas Container -->
+            <div class="canvas-container" id="canvasContainer">
+                <div class="canvas" id="canvas">
+                    <!-- Content will be rendered by JavaScript -->
+                </div>
+
+                <!-- Zoom Controls -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomIn">+</button>
+                    <div class="zoom-level" id="zoomLevel">100%</div>
+                    <button class="zoom-btn" id="zoomOut">−</button>
+                    <button class="zoom-btn" id="zoomReset" style="font-size: 10px;">⊙</button>
+                </div>
+            </div>
+
+            <!-- Detail Panel -->
+            <aside class="detail-panel" id="detailPanel">
+                <div class="detail-inner">
+                    <div class="detail-header">
+                        <div class="detail-header-top">
+                            <div>
+                                <h3 class="detail-title" id="detailTitle">Holon</h3>
+                                <p class="detail-subtitle">Holon-Editor</p>
+                            </div>
+                            <button class="close-btn" id="closeBtn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="info-box">
+                            <p id="detailDescription">Beskrivelse</p>
+                        </div>
+                    </div>
+                    <div class="detail-body">
+                        <h4 class="detail-label">Observationer & Hypoteser</h4>
+                        <textarea id="detailTextarea" class="detail-textarea" placeholder="- Indtast observationer her..."></textarea>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <footer class="footer" id="footer">
+            Epistemisk Kohærens via Lucidiansk Simulation
+        </footer>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let primaryName = "Jacob";
+        let activeHolonKey = null;
+
+        // Dynamic actors structure
+        let actors = [
+            { id: 'actor_1', name: 'Line', subActors: [] }
+        ];
+
+        // Holon notes storage
+        let holonNotes = {};
+
+        // Canvas state
+        let scale = 1;
+        let panX = 40;
+        let panY = 40;
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+
+        const MIN_SCALE = 0.3;
+        const MAX_SCALE = 2.5;
+        const SCALE_STEP = 0.1;
+
+        // ===== DOM ELEMENTS =====
+        const primaryNameInput = document.getElementById('primaryName');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const canvas = document.getElementById('canvas');
+        const detailPanel = document.getElementById('detailPanel');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailDescription = document.getElementById('detailDescription');
+        const detailTextarea = document.getElementById('detailTextarea');
+        const closeBtn = document.getElementById('closeBtn');
+        const footer = document.getElementById('footer');
+        const zoomInBtn = document.getElementById('zoomIn');
+        const zoomOutBtn = document.getElementById('zoomOut');
+        const zoomResetBtn = document.getElementById('zoomReset');
+        const zoomLevelDisplay = document.getElementById('zoomLevel');
+
+        // ===== NOTATION HELPERS =====
+        function getInitial(name) {
+            return name ? name.charAt(0).toUpperCase() : '?';
+        }
+
+        function formatNotation(type, actorName, subActorName = null) {
+            const J = getInitial(primaryName);
+            const A = getInitial(actorName);
+            const S = subActorName ? getInitial(subActorName) : null;
+
+            switch(type) {
+                // Self models
+                case 'self_luc': return `${J}(${J})_Luc.mod.`;
+                case 'self_ideel': return `${J}(${J})_idél`;
+
+                // Actor models (top level)
+                case 'actor_container': return `${J}(${A})_Luc.mod.`;
+                case 'actor_luc': return `${J}(${A})_Luc.mod.`;
+                case 'actor_ideel': return `${J}(${A})_idél`;
+                case 'actor_skygge': return `${J}(${A})_Skygge`;
+
+                // Nested actor MOF
+                case 'nested_self_luc': return `${J}(${A}(${A}))_Luc.mod.`;
+                case 'nested_primary_luc': return `${J}(${A}(${J}))_Luc.mod.`;
+
+                // Nested actor LOF
+                case 'nested_self_ideel': return `${J}(${A}(${A}))_idél`;
+                case 'nested_primary_ideel': return `${J}(${A}(${J}))_idél`;
+                case 'nested_skygge': return `${J}(${A})_Skygge`;
+
+                // Sub-actor models
+                case 'subactor_luc': return `${J}(${A}(${S}))_Luc.mod.`;
+                case 'subactor_ideel': return `${J}(${A}(${S}))_idél`;
+
+                // Sub-actor nested
+                case 'subactor_nested_self': return `${J}(${A}(${S}(${S})))_Luc.mod.`;
+                case 'subactor_nested_actor': return `${J}(${A}(${S}(${A})))_Luc.mod.`;
+                case 'subactor_nested_primary': return `${J}(${A}(${S}(${J})))_Luc.mod.`;
+
+                default: return type;
+            }
+        }
+
+        function getDescription(type, actorName, subActorName = null) {
+            const J = primaryName;
+            const A = actorName;
+            const S = subActorName;
+
+            switch(type) {
+                case 'self_luc': return `${J} modellerer sin egen umiddelbare selvopfattelse.`;
+                case 'self_ideel': return `${J} modellerer sit eget idéelle selvbillede.`;
+
+                case 'actor_container': return `${J}s model af ${A}s samlede livsverden.`;
+                case 'actor_luc': return `${J}s overordnede lucidianske model af ${A} som person.`;
+                case 'actor_ideel': return `${J} modellerer sit idéaliserede billede af ${A}.`;
+                case 'actor_skygge': return `${J} modellerer det, som er sandt om ${A}, men som ${A} undertrykker.`;
+
+                case 'nested_self_luc': return `${J} forestiller sig, hvordan ${A} ser på sig selv.`;
+                case 'nested_primary_luc': return `${J} forestiller sig, hvordan ${A} ser på ${J}.`;
+
+                case 'nested_self_ideel': return `${J} forestiller sig ${A}s idealiserede selvbillede.`;
+                case 'nested_primary_ideel': return `${J} forestiller sig ${A}s idealiserede billede af ${J}.`;
+                case 'nested_skygge': return `${J} forestiller sig det, ${A} undertrykker om sig selv.`;
+
+                case 'subactor_luc': return `${J} forestiller sig, hvordan ${A} ser på ${S}.`;
+                case 'subactor_ideel': return `${J} forestiller sig ${A}s idealiserede billede af ${S}.`;
+
+                case 'subactor_nested_self': return `${J} forestiller sig, hvordan ${A} tror ${S} ser på sig selv.`;
+                case 'subactor_nested_actor': return `${J} forestiller sig, hvordan ${A} tror ${S} ser på ${A}.`;
+                case 'subactor_nested_primary': return `${J} forestiller sig, hvordan ${A} tror ${S} ser på ${J}.`;
+
+                default: return '';
+            }
+        }
+
+        // ===== RENDERING =====
+        function renderCanvas() {
+            const J = getInitial(primaryName);
+
+            let html = `
+                <!-- MOF Section -->
+                <div class="main-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="icon-sm text-amber fill-amber" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            Mentalt Operativt Felt (MOF)
+                        </h2>
+                    </div>
+
+                    <div class="self-model-section">
+                        <!-- Self model -->
+                        <div class="self-model-box">
+                            <div style="font-size: 9px; font-weight: 700; color: #6366f1; margin-bottom: 0.5rem; text-transform: uppercase;">
+                                ${primaryName}s selvmodel
+                            </div>
+                            ${renderHolon('self_luc', null, null)}
+                        </div>
+
+                        <!-- Actor models -->
+                        <div class="actor-models-container">
+                            ${actors.map(actor => renderActorModel(actor)).join('')}
+
+                            <!-- Add Actor Button -->
+                            <button class="add-btn" onclick="addActor()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5v14M5 12h14"/>
+                                </svg>
+                                Tilføj Aktør
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threshold -->
+                <div class="threshold">
+                    <span class="threshold-label">Tærskel</span>
+                </div>
+
+                <!-- LOF Section -->
+                <div class="main-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="icon-sm text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+                                <path d="m2 2 20 20"/>
+                            </svg>
+                            Latent Operativt Felt (LOF)
+                        </h2>
+                    </div>
+
+                    <div class="lof-grid">
+                        ${renderHolon('self_ideel', null, null)}
+                        ${actors.map(actor => renderHolon('actor_ideel', actor.name, null, actor.id)).join('')}
+                        ${actors.map(actor => renderHolon('actor_skygge', actor.name, null, actor.id, true)).join('')}
+                    </div>
+                </div>
+            `;
+
+            canvas.innerHTML = html;
+            footer.textContent = `Epistemisk Kohærens via Lucidiansk Simulation · ${primaryName.toUpperCase()}`;
+        }
+
+        function renderActorModel(actor) {
+            const notation = formatNotation('actor_container', actor.name);
+
+            return `
+                <div class="actor-model" data-actor-id="${actor.id}">
+                    <div class="actor-header">
+                        <input type="text"
+                            class="actor-name-input"
+                            value="${actor.name}"
+                            onchange="updateActorName('${actor.id}', this.value)"
+                            placeholder="Aktørnavn">
+                        <span class="actor-notation">${notation}</span>
+                        <button class="actor-delete-btn" onclick="deleteActor('${actor.id}')">Slet</button>
+                    </div>
+
+                    <!-- Jacob's direct model of the actor -->
+                    <div class="actor-direct-model">
+                        <div class="nested-section-label" style="color: #4f46e5;">
+                            <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 16v-4"/>
+                                <path d="M12 8h.01"/>
+                            </svg>
+                            ${primaryName}s direkte model af ${actor.name}
+                        </div>
+                        ${renderHolon('actor_luc', actor.name, null, actor.id)}
+                    </div>
+
+                    <!-- Nested MOF -->
+                    <div class="nested-section">
+                        <div class="nested-section-label">
+                            <svg class="icon-xs text-amber fill-amber" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                            MOF (${actor.name}s lucidianske felt)
+                        </div>
+                        <div class="nested-grid">
+                            ${renderHolon('nested_primary_luc', actor.name, null, actor.id)}
+                            ${renderHolon('nested_self_luc', actor.name, null, actor.id)}
+                        </div>
+
+                        <!-- Sub-actors in MOF -->
+                        ${actor.subActors.map(sub => renderSubActorHolons(actor, sub, 'mof')).join('')}
+                    </div>
+
+                    <!-- Nested Threshold -->
+                    <div class="nested-threshold">
+                        <span class="nested-threshold-label">Tærskel</span>
+                    </div>
+
+                    <!-- Nested LOF -->
+                    <div class="nested-section">
+                        <div class="nested-section-label">
+                            <svg class="icon-xs text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                                <path d="m2 2 20 20"/>
+                            </svg>
+                            LOF (${actor.name}s latente felt)
+                        </div>
+                        <div class="nested-grid nested-grid-3">
+                            ${renderHolon('nested_primary_ideel', actor.name, null, actor.id)}
+                            ${renderHolon('nested_self_ideel', actor.name, null, actor.id)}
+                            ${renderHolon('nested_skygge', actor.name, null, actor.id, true)}
+                        </div>
+
+                        <!-- Sub-actors in LOF -->
+                        ${actor.subActors.map(sub => renderSubActorHolons(actor, sub, 'lof')).join('')}
+                    </div>
+
+                    <!-- Sub-actors section -->
+                    <div class="sub-actors-section">
+                        <div class="nested-section-label">
+                            <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            Undermodeller i ${actor.name}s felt
+                        </div>
+
+                        ${actor.subActors.map(sub => renderSubActorCard(actor, sub)).join('')}
+
+                        <button class="add-btn add-btn-small" onclick="addSubActor('${actor.id}')" style="margin-top: 0.5rem;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"/>
+                            </svg>
+                            Tilføj Undermodel
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSubActorCard(actor, subActor) {
+            return `
+                <div class="sub-actor">
+                    <div class="sub-actor-header">
+                        <input type="text"
+                            class="sub-actor-name-input"
+                            value="${subActor.name}"
+                            onchange="updateSubActorName('${actor.id}', '${subActor.id}', this.value)"
+                            placeholder="Navn">
+                        <span style="font-size: 9px; color: #6366f1; font-weight: 600;">
+                            ${formatNotation('subactor_luc', actor.name, subActor.name)}
+                        </span>
+                        <button class="actor-delete-btn" onclick="deleteSubActor('${actor.id}', '${subActor.id}')">×</button>
+                    </div>
+                    <div style="font-size: 9px; color: #64748b; font-style: italic;">
+                        ${getDescription('subactor_luc', actor.name, subActor.name)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSubActorHolons(actor, subActor, section) {
+            if (section === 'mof') {
+                return `
+                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e8f0;">
+                        <div style="font-size: 8px; color: #94a3b8; margin-bottom: 0.375rem; font-weight: 700;">
+                            ${actor.name}s model af ${subActor.name}:
+                        </div>
+                        <div class="nested-grid">
+                            ${renderHolon('subactor_luc', actor.name, subActor.name, actor.id + '_' + subActor.id)}
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e8f0;">
+                        <div style="font-size: 8px; color: #94a3b8; margin-bottom: 0.375rem; font-weight: 700;">
+                            ${actor.name}s idealiserede model af ${subActor.name}:
+                        </div>
+                        <div class="nested-grid">
+                            ${renderHolon('subactor_ideel', actor.name, subActor.name, actor.id + '_' + subActor.id)}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderHolon(type, actorName, subActorName, id = null, isShadow = false) {
+            const key = `${type}_${id || 'self'}`;
+            const notation = formatNotation(type, actorName, subActorName);
+            const description = getDescription(type, actorName, subActorName);
+            const notes = holonNotes[key] || '';
+            const noteLines = notes.split('\n').filter(l => l.trim());
+            const isActive = activeHolonKey === key;
+
+            return `
+                <div class="holon-box ${isShadow ? 'shadow-type' : ''} ${isActive ? 'active' : ''}"
+                    onclick="openHolon('${key}', '${notation}', \`${description.replace(/`/g, "'")}\`)">
+                    <div class="holon-header">
+                        <span class="holon-notation">${notation}</span>
+                        ${isShadow ? '<span class="shadow-badge">Skygge</span>' : '<div class="holon-status"></div>'}
+                    </div>
+                    <div class="holon-description">${description}</div>
+                    ${noteLines.length > 0 ? `
+                        <div class="holon-notes-preview">
+                            <ul>
+                                ${noteLines.map(l => `<li>${l.replace(/^[-•]\s*/, '')}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // ===== ACTOR MANAGEMENT =====
+        function addActor() {
+            const id = 'actor_' + Date.now();
+            const existingNames = actors.map(a => a.name);
+            let newName = 'Ny Aktør';
+            let counter = 1;
+            while (existingNames.includes(newName)) {
+                newName = `Ny Aktør ${++counter}`;
+            }
+            actors.push({ id, name: newName, subActors: [] });
+            renderCanvas();
+        }
+
+        function deleteActor(actorId) {
+            if (actors.length <= 1) {
+                alert('Der skal være mindst én aktør.');
+                return;
+            }
+            actors = actors.filter(a => a.id !== actorId);
+            renderCanvas();
+        }
+
+        function updateActorName(actorId, newName) {
+            const actor = actors.find(a => a.id === actorId);
+            if (actor) {
+                actor.name = newName || 'Unavngivet';
+                renderCanvas();
+            }
+        }
+
+        function addSubActor(actorId) {
+            const actor = actors.find(a => a.id === actorId);
+            if (actor) {
+                const id = 'sub_' + Date.now();
+                actor.subActors.push({ id, name: 'Ny Person' });
+                renderCanvas();
+            }
+        }
+
+        function deleteSubActor(actorId, subActorId) {
+            const actor = actors.find(a => a.id === actorId);
+            if (actor) {
+                actor.subActors = actor.subActors.filter(s => s.id !== subActorId);
+                renderCanvas();
+            }
+        }
+
+        function updateSubActorName(actorId, subActorId, newName) {
+            const actor = actors.find(a => a.id === actorId);
+            if (actor) {
+                const subActor = actor.subActors.find(s => s.id === subActorId);
+                if (subActor) {
+                    subActor.name = newName || 'Unavngivet';
+                    renderCanvas();
+                }
+            }
+        }
+
+        // ===== HOLON PANEL =====
+        function openHolon(key, notation, description) {
+            activeHolonKey = key;
+            detailTitle.textContent = notation;
+            detailDescription.textContent = description;
+            detailTextarea.value = holonNotes[key] || '';
+            detailPanel.classList.add('open');
+            renderCanvas();
+            setTimeout(() => detailTextarea.focus(), 200);
+        }
+
+        function closePanel() {
+            activeHolonKey = null;
+            detailPanel.classList.remove('open');
+            renderCanvas();
+        }
+
+        // ===== ZOOM & PAN =====
+        function updateCanvasTransform() {
+            canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+            zoomLevelDisplay.textContent = `${Math.round(scale * 100)}%`;
+        }
+
+        function zoom(delta, cx, cy) {
+            const oldScale = scale;
+            scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale + delta));
+            if (cx !== undefined) {
+                const rect = canvasContainer.getBoundingClientRect();
+                const mx = cx - rect.left;
+                const my = cy - rect.top;
+                panX = mx - (mx - panX) * (scale / oldScale);
+                panY = my - (my - panY) * (scale / oldScale);
+            }
+            updateCanvasTransform();
+        }
+
+        function resetView() {
+            scale = 1;
+            panX = 40;
+            panY = 40;
+            updateCanvasTransform();
+        }
+
+        // ===== EVENT LISTENERS =====
+        primaryNameInput.addEventListener('input', (e) => {
+            primaryName = e.target.value || 'Jacob';
+            renderCanvas();
+        });
+
+        closeBtn.addEventListener('click', closePanel);
+
+        detailTextarea.addEventListener('input', (e) => {
+            if (activeHolonKey) {
+                holonNotes[activeHolonKey] = e.target.value;
+            }
+        });
+
+        zoomInBtn.addEventListener('click', () => zoom(SCALE_STEP));
+        zoomOutBtn.addEventListener('click', () => zoom(-SCALE_STEP));
+        zoomResetBtn.addEventListener('click', resetView);
+
+        canvasContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            zoom(e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP, e.clientX, e.clientY);
+        }, { passive: false });
+
+        canvasContainer.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.holon-box') || e.target.closest('.add-btn') ||
+                e.target.closest('input') || e.target.closest('button')) return;
+            isPanning = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+            canvasContainer.classList.add('panning');
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            updateCanvasTransform();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isPanning = false;
+            canvasContainer.classList.remove('panning');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key === '+' || e.key === '=') zoom(SCALE_STEP);
+            else if (e.key === '-') zoom(-SCALE_STEP);
+            else if (e.key === '0') resetView();
+            else if (e.key === 'Escape') closePanel();
+        });
+
+        // ===== INIT =====
+        renderCanvas();
+        updateCanvasTransform();
+    </script>
+</body>
+</html>

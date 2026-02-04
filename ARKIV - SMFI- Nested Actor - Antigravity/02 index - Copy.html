@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMFI Visual Mapper v. 2.7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            min-height: 100vh;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            body { padding: 2rem; }
+        }
+
+        ::selection {
+            background-color: #e0e7ff;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            height: calc(100vh - 4rem);
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brain-icon {
+            padding: 0.75rem;
+            background: #4f46e5;
+            border-radius: 1rem;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            font-size: 1.125rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            font-style: italic;
+            text-transform: uppercase;
+        }
+
+        .header-title span {
+            font-size: 10px;
+            font-style: normal;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-left: 0.5rem;
+        }
+
+        .operator-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .operator-input {
+            font-size: 10px;
+            font-weight: 700;
+            color: #4f46e5;
+            background: #eef2ff;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            border: none;
+            outline: none;
+            width: 6rem;
+            transition: all 0.2s;
+        }
+
+        .operator-input:focus {
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .analysis-object {
+            text-align: right;
+        }
+
+        .analysis-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+        }
+
+        .analysis-input {
+            font-size: 0.875rem;
+            font-weight: 900;
+            color: #1e293b;
+            background: transparent;
+            border: none;
+            text-align: right;
+            outline: none;
+            width: 8rem;
+        }
+
+        .analysis-input:focus {
+            color: #4f46e5;
+        }
+
+        .settings-btn {
+            padding: 0.625rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-btn:hover {
+            color: #4f46e5;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            gap: 1.5rem;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            flex: 1;
+            background: #e2e8f0;
+            border-radius: 1.5rem;
+            border: 1px solid #cbd5e1;
+            overflow: hidden;
+            position: relative;
+            cursor: grab;
+            background-image: radial-gradient(circle, #cbd5e1 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+        }
+
+        .canvas-container.panning {
+            cursor: grabbing;
+        }
+
+        /* Canvas */
+        .canvas {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            transform-origin: 0 0;
+            background: white;
+            padding: 2.5rem;
+            min-width: 1400px;
+            border-radius: 2rem;
+            box-shadow: 0 25px 80px -12px rgba(0,0,0,0.2);
+            transition: none;
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+
+        .zoom-btn:hover {
+            background: #f8fafc;
+            color: #4f46e5;
+            border-color: #c7d2fe;
+            transform: scale(1.05);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.95);
+            background: #eef2ff;
+        }
+
+        .zoom-level {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .zoom-reset {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 900;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* MOF Section */
+        .mof-section {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .mof-grid {
+            display: grid;
+            grid-template-columns: 1fr 2.5fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .model-label {
+            padding: 0.375rem 1rem;
+            background: #eef2ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 9999px;
+            font-size: 9px;
+            font-weight: 900;
+            color: #4f46e5;
+            letter-spacing: -0.025em;
+            text-transform: uppercase;
+            width: fit-content;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .right-container {
+            padding: 1.5rem;
+            border-radius: 2rem;
+            border: 2px solid #e0e7ff;
+            background: linear-gradient(135deg, #fafaff 0%, #f5f7ff 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .right-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0.5rem;
+        }
+
+        .right-notation {
+            font-size: 10px;
+            font-weight: 900;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .right-label {
+            padding: 0.375rem 1rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 9999px;
+            font-size: 9px;
+            font-weight: 900;
+            color: #64748b;
+            letter-spacing: -0.025em;
+            text-transform: uppercase;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .nested-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .nested-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .nested-section-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 9px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .nested-threshold {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0;
+            margin: 0.5rem 0;
+        }
+
+        .nested-threshold-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            border-top: 1px dashed #cbd5e1;
+        }
+
+        .nested-threshold-label {
+            position: relative;
+            background: #f8fafc;
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 8px;
+            font-weight: 800;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Threshold Divider */
+        .threshold {
+            position: relative;
+            padding: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .threshold-line {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .threshold-line div {
+            width: 100%;
+            border-top: 2px dashed #cbd5e1;
+        }
+
+        .threshold-label {
+            position: relative;
+            background: white;
+            padding: 0.5rem 2rem;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            font-size: 10px;
+            font-weight: 900;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* LOF Section */
+        .lof-section {
+            position: relative;
+            margin-top: 3rem;
+        }
+
+        .lof-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* MapBox */
+        .map-box {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            border-radius: 1.25rem;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            min-height: 140px;
+        }
+
+        .nested-grid .map-box,
+        .nested-grid-3 .map-box {
+            min-height: 120px;
+        }
+
+        .nested-grid .map-box .map-box-header,
+        .nested-grid-3 .map-box .map-box-header {
+            padding: 0.875rem 1rem;
+        }
+
+        .nested-grid .map-box .map-box-content,
+        .nested-grid-3 .map-box .map-box-content {
+            padding: 0.875rem 1rem;
+        }
+
+        .nested-grid .map-box .map-box-notation,
+        .nested-grid-3 .map-box .map-box-notation {
+            font-size: 11px;
+        }
+
+        .nested-grid .map-box .map-box-description,
+        .nested-grid-3 .map-box .map-box-description {
+            font-size: 10px;
+        }
+
+        .map-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px -8px rgba(0,0,0,0.15);
+            border-color: #c7d2fe;
+        }
+
+        .map-box.active {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px -8px rgba(79, 70, 229, 0.3);
+            border-color: #6366f1;
+            background: #fafbff;
+        }
+
+        .map-box.shadow-type {
+            background: #fffbfb;
+            border-color: #fecdd3;
+        }
+
+        .map-box.shadow-type:hover {
+            border-color: #fda4af;
+        }
+
+        .map-box-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .map-box.active .map-box-header {
+            border-color: #e0e7ff;
+        }
+
+        .map-box.shadow-type .map-box-header {
+            border-color: #fecdd3;
+        }
+
+        .map-box-notation {
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        .map-box:hover .map-box-notation {
+            color: #4f46e5;
+        }
+
+        .map-box.active .map-box-notation {
+            color: #4f46e5;
+        }
+
+        .map-box.shadow-type .map-box-notation {
+            color: #e11d48;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 9999px;
+            background: #e2e8f0;
+        }
+
+        .map-box.active .status-dot {
+            background: #6366f1;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .map-box-content {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .map-box-description {
+            font-size: 12px;
+            line-height: 1.6;
+            font-style: italic;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .map-box.active .map-box-description {
+            color: #6366f1;
+        }
+
+        .map-box.shadow-type .map-box-description {
+            color: #be185d;
+        }
+
+        .notes-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+            margin-top: auto;
+        }
+
+        .notes-list li {
+            font-size: 11px;
+            line-height: 1.5;
+            border-left: 3px solid #c7d2fe;
+            padding-left: 0.75rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .map-box.shadow-type .notes-list li {
+            border-color: #fecdd3;
+            color: #9f1239;
+        }
+
+        .add-observation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 0;
+            margin-top: auto;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .map-box:hover .add-observation {
+            opacity: 1;
+        }
+
+        .add-observation span {
+            font-size: 9px;
+            font-weight: 900;
+            color: #a5b4fc;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: #eef2ff;
+            padding: 0.375rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid #e0e7ff;
+        }
+
+        .shadow-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+        }
+
+        .shadow-badge span {
+            font-size: 8px;
+            font-weight: 900;
+            color: #fb7185;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.5rem;
+            background: white;
+            border: 1px solid #fecdd3;
+            border-radius: 9999px;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            transition: width 0.4s ease, opacity 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 0;
+            opacity: 0;
+        }
+
+        .detail-panel.open {
+            width: 420px;
+            opacity: 1;
+        }
+
+        .detail-inner {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            min-width: 420px;
+        }
+
+        .detail-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafbfc;
+            flex-shrink: 0;
+        }
+
+        .detail-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .detail-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #4f46e5;
+            letter-spacing: -0.025em;
+        }
+
+        .detail-subtitle {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+        }
+
+        .close-btn {
+            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .info-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #e0e7ff;
+        }
+
+        .info-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .info-content svg {
+            color: #818cf8;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .info-content p {
+            font-size: 12px;
+            font-style: italic;
+            color: #475569;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: white;
+        }
+
+        .detail-body-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .detail-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-textarea {
+            flex: 1;
+            width: 100%;
+            min-height: 300px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            font-size: 0.875rem;
+            color: #334155;
+            outline: none;
+            transition: all 0.2s;
+            resize: none;
+            font-weight: 500;
+            line-height: 1.7;
+            font-family: inherit;
+        }
+
+        .detail-textarea:focus {
+            border-color: #c7d2fe;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .detail-textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Icons */
+        .icon { width: 24px; height: 24px; }
+        .icon-sm { width: 14px; height: 14px; }
+        .icon-md { width: 18px; height: 18px; }
+        .icon-lg { width: 20px; height: 20px; }
+        .icon-xs { width: 12px; height: 12px; }
+        .icon-info { width: 16px; height: 16px; }
+
+        .text-amber { color: #f59e0b; }
+        .fill-amber { fill: #f59e0b; }
+        .text-indigo { color: #6366f1; }
+
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="brain-icon">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+                        <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+                        <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+                        <path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/>
+                        <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/>
+                        <path d="M3.477 10.896a4 4 0 0 1 .585-.396"/>
+                        <path d="M19.938 10.5a4 4 0 0 1 .585.396"/>
+                        <path d="M6 18a4 4 0 0 1-1.967-.516"/>
+                        <path d="M19.967 17.484A4 4 0 0 1 18 18"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="header-title">SMFI VISUAL MAPPER <span>v. 2.7</span></h1>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="operator-label">Primær Operatør:</span>
+                        <input type="text" id="primaryName" value="Jacob" class="operator-input">
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="analysis-object">
+                    <span class="analysis-label">Analyseobjekt</span>
+                    <input type="text" id="actorName" value="Line" class="analysis-input">
+                </div>
+                <button class="settings-btn">
+                    <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 7h-9"/>
+                        <path d="M14 17H5"/>
+                        <circle cx="17" cy="17" r="3"/>
+                        <circle cx="7" cy="7" r="3"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Canvas Container -->
+            <div class="canvas-container" id="canvasContainer">
+                <!-- Canvas (transformable) -->
+                <div class="canvas" id="canvas">
+                    <!-- MOF Section -->
+                    <div class="mof-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <svg class="icon-sm text-amber fill-amber" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
+                                Mentalt Operativt Felt (MOF)
+                            </h2>
+                        </div>
+
+                        <div class="mof-grid">
+                            <!-- Left Column -->
+                            <div class="left-column">
+                                <div class="model-label" id="leftModelLabel">Jacobs lucidianske model af sig selv</div>
+                                <div class="map-box" data-holon="J_J_Luc" id="box-J_J_Luc">
+                                    <div class="map-box-header">
+                                        <span class="map-box-notation" id="notation-J_J_Luc">J(J)_Luc.mod.</span>
+                                        <div class="status-dot"></div>
+                                    </div>
+                                    <div class="map-box-content">
+                                        <p class="map-box-description" id="desc-J_J_Luc">Jacob modellerer sin egen umiddelbare selvopfattelse.</p>
+                                        <div id="notes-container-J_J_Luc"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Container: J(L) - Jacobs model af Lines livsverden -->
+                            <div class="right-container">
+                                <div class="right-header">
+                                    <span class="right-notation" id="rightNotation">J(L)_Luc.mod.</span>
+                                    <div class="right-label" id="rightModelLabel">Jacobs lucidianske model af Line</div>
+                                </div>
+
+                                <!-- Nested MOF -->
+                                <div class="nested-section-label">
+                                    <svg class="icon-xs text-amber fill-amber" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                    </svg>
+                                    <span>MOF (Lines lucidianske felt)</span>
+                                </div>
+                                <div class="nested-grid">
+                                    <div class="map-box" data-holon="J_L_J_Luc" id="box-J_L_J_Luc">
+                                        <div class="map-box-header">
+                                            <span class="map-box-notation" id="notation-J_L_J_Luc">J(L(J))_Luc.mod.</span>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="map-box-content">
+                                            <p class="map-box-description" id="desc-J_L_J_Luc">Jacob forestiller sig, hvordan Line ser på Jacob.</p>
+                                            <div id="notes-container-J_L_J_Luc"></div>
+                                        </div>
+                                    </div>
+                                    <div class="map-box" data-holon="J_L_L_Luc" id="box-J_L_L_Luc">
+                                        <div class="map-box-header">
+                                            <span class="map-box-notation" id="notation-J_L_L_Luc">J(L(L))_Luc.mod.</span>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="map-box-content">
+                                            <p class="map-box-description" id="desc-J_L_L_Luc">Jacob forestiller sig, hvordan Line ser på sig selv.</p>
+                                            <div id="notes-container-J_L_L_Luc"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nested Threshold -->
+                                <div class="nested-threshold">
+                                    <div class="nested-threshold-line"></div>
+                                    <span class="nested-threshold-label">Tærskel</span>
+                                </div>
+
+                                <!-- Nested LOF -->
+                                <div class="nested-section-label">
+                                    <svg class="icon-xs text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                                        <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                                        <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+                                        <path d="m2 2 20 20"/>
+                                    </svg>
+                                    <span>LOF (Lines latente felt)</span>
+                                </div>
+                                <div class="nested-grid nested-grid-3">
+                                    <div class="map-box" data-holon="J_L_J_Ideel" id="box-J_L_J_Ideel">
+                                        <div class="map-box-header">
+                                            <span class="map-box-notation" id="notation-J_L_J_Ideel">J(L(J))_idél</span>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="map-box-content">
+                                            <p class="map-box-description" id="desc-J_L_J_Ideel">Jacob forestiller sig Lines idealiserede billede af Jacob.</p>
+                                            <div id="notes-container-J_L_J_Ideel"></div>
+                                        </div>
+                                    </div>
+                                    <div class="map-box" data-holon="J_L_L_Ideel" id="box-J_L_L_Ideel">
+                                        <div class="map-box-header">
+                                            <span class="map-box-notation" id="notation-J_L_L_Ideel">J(L(L))_idél</span>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="map-box-content">
+                                            <p class="map-box-description" id="desc-J_L_L_Ideel">Jacob forestiller sig Lines idealiserede selvbillede.</p>
+                                            <div id="notes-container-J_L_L_Ideel"></div>
+                                        </div>
+                                    </div>
+                                    <div class="map-box shadow-type" data-holon="J_L_Skygge" id="box-J_L_Skygge">
+                                        <div class="shadow-badge"><span>SKYGGE</span></div>
+                                        <div class="map-box-header">
+                                            <span class="map-box-notation" id="notation-J_L_Skygge">J(L)_Skygge</span>
+                                            <div class="status-dot"></div>
+                                        </div>
+                                        <div class="map-box-content">
+                                            <p class="map-box-description" id="desc-J_L_Skygge">Jacob forestiller sig det, Line undertrykker om sig selv.</p>
+                                            <div id="notes-container-J_L_Skygge"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Threshold -->
+                    <div class="threshold">
+                        <div class="threshold-line"><div></div></div>
+                        <div class="threshold-label">Tærskel</div>
+                    </div>
+
+                    <!-- LOF Section -->
+                    <div class="lof-section">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <svg class="icon-sm text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+                                    <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                                    <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+                                    <path d="m2 2 20 20"/>
+                                </svg>
+                                Latent Operativt Felt (LOF)
+                            </h2>
+                        </div>
+
+                        <div class="lof-grid">
+                            <div class="map-box" data-holon="J_J_Ideel" id="box-J_J_Ideel">
+                                <div class="map-box-header">
+                                    <span class="map-box-notation" id="notation-J_J_Ideel">J(J)_idél</span>
+                                    <div class="status-dot"></div>
+                                </div>
+                                <div class="map-box-content">
+                                    <p class="map-box-description" id="desc-J_J_Ideel">Jacob modellerer sit eget idéelle selvbillede.</p>
+                                    <div id="notes-container-J_J_Ideel"></div>
+                                </div>
+                            </div>
+                            <div class="map-box" data-holon="J_L_Ideel" id="box-J_L_Ideel">
+                                <div class="map-box-header">
+                                    <span class="map-box-notation" id="notation-J_L_Ideel">J(L)_idél</span>
+                                    <div class="status-dot"></div>
+                                </div>
+                                <div class="map-box-content">
+                                    <p class="map-box-description" id="desc-J_L_Ideel">Jacob modellerer sit idéaliserede billede af Line.</p>
+                                    <div id="notes-container-J_L_Ideel"></div>
+                                </div>
+                            </div>
+                            <div class="map-box shadow-type" data-holon="Skygge" id="box-Skygge">
+                                <div class="shadow-badge"><span>SKYGGE</span></div>
+                                <div class="map-box-header">
+                                    <span class="map-box-notation" id="notation-Skygge">J(L)_Skygge</span>
+                                    <div class="status-dot"></div>
+                                </div>
+                                <div class="map-box-content">
+                                    <p class="map-box-description" id="desc-Skygge">Jacob modellerer det, som er sandt om Line, men som Line undertrykker.</p>
+                                    <div id="notes-container-Skygge"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zoom Controls -->
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomIn" title="Zoom ind (+ eller scroll op)">+</button>
+                    <div class="zoom-level" id="zoomLevel">100%</div>
+                    <button class="zoom-btn" id="zoomOut" title="Zoom ud (- eller scroll ned)">−</button>
+                    <button class="zoom-btn zoom-reset" id="zoomReset" title="Nulstil (0)">Reset</button>
+                </div>
+            </div>
+
+            <!-- Detail Panel -->
+            <aside class="detail-panel" id="detailPanel">
+                <div class="detail-inner" id="detailInner">
+                    <div class="detail-header">
+                        <div class="detail-header-top">
+                            <div>
+                                <h3 class="detail-title" id="detailTitle">J(J)_Luc.mod.</h3>
+                                <p class="detail-subtitle">Holon-Editor</p>
+                            </div>
+                            <button class="close-btn" id="closeBtn" title="Luk (Esc)">
+                                <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 6 6 18"/>
+                                    <path d="m6 6 12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="info-box">
+                            <div class="info-content">
+                                <svg class="icon-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 16v-4"/>
+                                    <path d="M12 8h.01"/>
+                                </svg>
+                                <p id="detailDescription">Jacob modellerer sin egen umiddelbare selvopfattelse.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-body custom-scrollbar">
+                        <div class="detail-body-inner">
+                            <h4 class="detail-label">
+                                <svg class="icon-xs text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="8" x2="21" y1="6" y2="6"/>
+                                    <line x1="8" x2="21" y1="12" y2="12"/>
+                                    <line x1="8" x2="21" y1="18" y2="18"/>
+                                    <line x1="3" x2="3.01" y1="6" y2="6"/>
+                                    <line x1="3" x2="3.01" y1="12" y2="12"/>
+                                    <line x1="3" x2="3.01" y1="18" y2="18"/>
+                                </svg>
+                                Observationer & Hypoteser
+                            </h4>
+                            <textarea
+                                id="detailTextarea"
+                                class="detail-textarea custom-scrollbar"
+                                placeholder="- Indtast dine observationer her...&#10;- Brug bindestreg for punktform"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <footer class="footer" id="footer">
+            Epistemisk Kohærens via Lucidiansk Simulation &bull; JACOB
+        </footer>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let primaryName = "Jacob";
+        let actorName = "Line";
+        let activeHolonId = null;
+
+        // Canvas state
+        let scale = 1;
+        let panX = 50;
+        let panY = 50;
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+
+        const MIN_SCALE = 0.3;
+        const MAX_SCALE = 2.5;
+        const SCALE_STEP = 0.1;
+
+        const holons = {
+            // Top-level MOF
+            'J_J_Luc': { notes: "" },
+            // Top-level LOF
+            'J_J_Ideel': { notes: "" },
+            'J_L_Ideel': { notes: "" },
+            'Skygge': { notes: "" },
+            // Nested J(L) - MOF
+            'J_L_J_Luc': { notes: "" },
+            'J_L_L_Luc': { notes: "" },
+            // Nested J(L) - LOF
+            'J_L_J_Ideel': { notes: "" },
+            'J_L_L_Ideel': { notes: "" },
+            'J_L_Skygge': { notes: "" }
+        };
+
+        // ===== DOM ELEMENTS =====
+        const primaryNameInput = document.getElementById('primaryName');
+        const actorNameInput = document.getElementById('actorName');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const canvas = document.getElementById('canvas');
+        const zoomInBtn = document.getElementById('zoomIn');
+        const zoomOutBtn = document.getElementById('zoomOut');
+        const zoomResetBtn = document.getElementById('zoomReset');
+        const zoomLevelDisplay = document.getElementById('zoomLevel');
+        const detailPanel = document.getElementById('detailPanel');
+        const detailInner = document.getElementById('detailInner');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailDescription = document.getElementById('detailDescription');
+        const detailTextarea = document.getElementById('detailTextarea');
+        const closeBtn = document.getElementById('closeBtn');
+        const footer = document.getElementById('footer');
+
+        // ===== NOTATION FUNCTIONS =====
+        function formatNotation(hId) {
+            const J = primaryName.charAt(0).toUpperCase();
+            const L = actorName.charAt(0).toUpperCase();
+
+            // Top-level
+            if (hId === 'Skygge') return `${J}(${L})_Skygge`;
+            if (hId === 'J_J_Luc') return `${J}(${J})_Luc.mod.`;
+            if (hId === 'J_J_Ideel') return `${J}(${J})_idél`;
+            if (hId === 'J_L_Luc') return `${J}(${L})_Luc.mod.`;
+            if (hId === 'J_L_Ideel') return `${J}(${L})_idél`;
+            // Nested MOF
+            if (hId === 'J_L_J_Luc') return `${J}(${L}(${J}))_Luc.mod.`;
+            if (hId === 'J_L_L_Luc') return `${J}(${L}(${L}))_Luc.mod.`;
+            // Nested LOF
+            if (hId === 'J_L_J_Ideel') return `${J}(${L}(${J}))_idél`;
+            if (hId === 'J_L_L_Ideel') return `${J}(${L}(${L}))_idél`;
+            if (hId === 'J_L_Skygge') return `${J}(${L})_Skygge`;
+            return "";
+        }
+
+        function translateNotation(hId) {
+            const J = primaryName;
+            const L = actorName;
+            // Top-level
+            if (hId === 'Skygge') return `${J} modellerer det, som er sandt om ${L}, men som ${L} undertrykker.`;
+            if (hId === 'J_J_Luc') return `${J} modellerer sin egen umiddelbare selvopfattelse.`;
+            if (hId === 'J_J_Ideel') return `${J} modellerer sit eget idéelle selvbillede.`;
+            if (hId === 'J_L_Luc') return `${J} modellerer sin overordnede opfattelse af ${L}.`;
+            if (hId === 'J_L_Ideel') return `${J} modellerer sit idéaliserede billede af ${L}.`;
+            // Nested MOF
+            if (hId === 'J_L_J_Luc') return `${J} forestiller sig, hvordan ${L} ser på ${J}.`;
+            if (hId === 'J_L_L_Luc') return `${J} forestiller sig, hvordan ${L} ser på sig selv.`;
+            // Nested LOF
+            if (hId === 'J_L_J_Ideel') return `${J} forestiller sig ${L}s idealiserede billede af ${J}.`;
+            if (hId === 'J_L_L_Ideel') return `${J} forestiller sig ${L}s idealiserede selvbillede.`;
+            if (hId === 'J_L_Skygge') return `${J} forestiller sig det, ${L} undertrykker om sig selv.`;
+            return "";
+        }
+
+        function updateAllNotations() {
+            // All holon IDs
+            const holonIds = [
+                'J_J_Luc', 'J_J_Ideel', 'J_L_Ideel', 'Skygge',
+                'J_L_J_Luc', 'J_L_L_Luc',
+                'J_L_J_Ideel', 'J_L_L_Ideel', 'J_L_Skygge'
+            ];
+
+            holonIds.forEach(hId => {
+                const notationEl = document.getElementById(`notation-${hId}`);
+                const descEl = document.getElementById(`desc-${hId}`);
+                if (notationEl) notationEl.textContent = formatNotation(hId);
+                if (descEl) descEl.textContent = translateNotation(hId);
+            });
+
+            document.getElementById('leftModelLabel').textContent = `${primaryName}s lucidianske model af sig selv`;
+            document.getElementById('rightNotation').textContent = formatNotation('J_L_Luc');
+            document.getElementById('rightModelLabel').textContent = `${primaryName}s lucidianske model af ${actorName}`;
+            footer.innerHTML = `Epistemisk Kohærens via Lucidiansk Simulation &bull; ${primaryName.toUpperCase()}`;
+
+            if (activeHolonId) {
+                detailTitle.textContent = formatNotation(activeHolonId);
+                detailDescription.textContent = translateNotation(activeHolonId);
+            }
+        }
+
+        // ===== NOTES FUNCTIONS =====
+        function renderNotesPreview(hId) {
+            const container = document.getElementById(`notes-container-${hId}`);
+            if (!container) return;
+
+            const notes = holons[hId].notes;
+            const noteLines = notes ? notes.split('\n').filter(line => line.trim()) : [];
+
+            if (noteLines.length > 0) {
+                const ul = document.createElement('ul');
+                ul.className = 'notes-list';
+                noteLines.forEach(line => {
+                    const li = document.createElement('li');
+                    li.textContent = line.replace(/^[-•]\s*/, '');
+                    ul.appendChild(li);
+                });
+                container.innerHTML = '';
+                container.appendChild(ul);
+            } else {
+                container.innerHTML = `
+                    <div class="add-observation">
+                        <span>Klik for at tilføje</span>
+                    </div>
+                `;
+            }
+        }
+
+        // ===== PANEL FUNCTIONS =====
+        function openDetailPanel(hId) {
+            document.querySelectorAll('.map-box').forEach(box => box.classList.remove('active'));
+
+            const selectedBox = document.getElementById(`box-${hId}`);
+            if (selectedBox) selectedBox.classList.add('active');
+
+            activeHolonId = hId;
+            detailTitle.textContent = formatNotation(hId);
+            detailDescription.textContent = translateNotation(hId);
+            detailTextarea.value = holons[hId].notes;
+
+            detailPanel.classList.add('open');
+            setTimeout(() => detailTextarea.focus(), 300);
+        }
+
+        function closeDetailPanel() {
+            document.querySelectorAll('.map-box').forEach(box => box.classList.remove('active'));
+            activeHolonId = null;
+            detailPanel.classList.remove('open');
+        }
+
+        // ===== ZOOM & PAN FUNCTIONS =====
+        function updateCanvasTransform() {
+            canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+            zoomLevelDisplay.textContent = `${Math.round(scale * 100)}%`;
+        }
+
+        function zoom(delta, centerX, centerY) {
+            const oldScale = scale;
+            scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale + delta));
+
+            // Zoom towards point
+            if (centerX !== undefined && centerY !== undefined) {
+                const rect = canvasContainer.getBoundingClientRect();
+                const mouseX = centerX - rect.left;
+                const mouseY = centerY - rect.top;
+                const ratio = scale / oldScale;
+                panX = mouseX - (mouseX - panX) * ratio;
+                panY = mouseY - (mouseY - panY) * ratio;
+            }
+
+            updateCanvasTransform();
+        }
+
+        function resetView() {
+            scale = 1;
+            panX = 50;
+            panY = 50;
+            updateCanvasTransform();
+        }
+
+        // ===== EVENT LISTENERS =====
+
+        // Name inputs
+        primaryNameInput.addEventListener('input', (e) => {
+            primaryName = e.target.value || "Jacob";
+            updateAllNotations();
+        });
+
+        actorNameInput.addEventListener('input', (e) => {
+            actorName = e.target.value || "Line";
+            updateAllNotations();
+        });
+
+        // Map box clicks
+        document.querySelectorAll('.map-box').forEach(box => {
+            box.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const hId = box.dataset.holon;
+                openDetailPanel(hId);
+            });
+        });
+
+        // Close button
+        closeBtn.addEventListener('click', closeDetailPanel);
+
+        // Textarea
+        detailTextarea.addEventListener('input', (e) => {
+            if (activeHolonId) {
+                holons[activeHolonId].notes = e.target.value;
+                renderNotesPreview(activeHolonId);
+            }
+        });
+
+        // Zoom buttons
+        zoomInBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            zoom(SCALE_STEP);
+        });
+
+        zoomOutBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            zoom(-SCALE_STEP);
+        });
+
+        zoomResetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resetView();
+        });
+
+        // Mouse wheel zoom
+        canvasContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP;
+            zoom(delta, e.clientX, e.clientY);
+        }, { passive: false });
+
+        // Pan with mouse drag
+        canvasContainer.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.map-box') ||
+                e.target.closest('.zoom-controls') ||
+                e.target.closest('input') ||
+                e.target.closest('button') ||
+                e.target.closest('textarea')) {
+                return;
+            }
+
+            isPanning = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+            canvasContainer.classList.add('panning');
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            updateCanvasTransform();
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isPanning) {
+                isPanning = false;
+                canvasContainer.classList.remove('panning');
+            }
+        });
+
+        // Touch support
+        let lastTouchDistance = 0;
+
+        canvasContainer.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.map-box') || e.target.closest('.zoom-controls')) return;
+
+            if (e.touches.length === 1) {
+                isPanning = true;
+                startX = e.touches[0].clientX - panX;
+                startY = e.touches[0].clientY - panY;
+            } else if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
+            }
+        }, { passive: true });
+
+        canvasContainer.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.map-box') || e.target.closest('.zoom-controls')) return;
+
+            if (e.touches.length === 1 && isPanning) {
+                e.preventDefault();
+                panX = e.touches[0].clientX - startX;
+                panY = e.touches[0].clientY - startY;
+                updateCanvasTransform();
+            } else if (e.touches.length === 2) {
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const delta = (distance - lastTouchDistance) * 0.01;
+                const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                zoom(delta, centerX, centerY);
+                lastTouchDistance = distance;
+            }
+        }, { passive: false });
+
+        canvasContainer.addEventListener('touchend', () => {
+            isPanning = false;
+            lastTouchDistance = 0;
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                zoom(SCALE_STEP);
+            } else if (e.key === '-' || e.key === '_') {
+                e.preventDefault();
+                zoom(-SCALE_STEP);
+            } else if (e.key === '0') {
+                e.preventDefault();
+                resetView();
+            } else if (e.key === 'Escape' && activeHolonId) {
+                closeDetailPanel();
+            }
+        });
+
+        // ===== INITIALIZE =====
+        Object.keys(holons).forEach(hId => renderNotesPreview(hId));
+        updateCanvasTransform();
+    </script>
+</body>
+</html>
