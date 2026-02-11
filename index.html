@@ -3,905 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMFI Visual Mapper v. 3.0</title>
+    <title>SMFI Visual Mapper v. 4.0</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f1f5f9;
-            color: #0f172a;
-            min-height: 100vh;
-            padding: 1rem;
-            overflow: hidden;
+            background-color: #f1f5f9; color: #0f172a;
+            min-height: 100vh; padding: 1rem; overflow: hidden;
         }
-
-        @media (min-width: 768px) {
-            body { padding: 2rem; }
-        }
-
-        ::selection {
-            background-color: #e0e7ff;
-        }
+        @media (min-width: 768px) { body { padding: 2rem; } }
+        ::selection { background-color: #e0e7ff; }
 
         .container {
-            max-width: 1800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            height: calc(100vh - 4rem);
+            max-width: 1800px; margin: 0 auto; display: flex;
+            flex-direction: column; gap: 1rem; height: calc(100vh - 4rem);
         }
 
         /* Header */
         .header {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 1.25rem;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            flex-shrink: 0;
-            z-index: 10;
+            background: white; padding: 1rem 1.5rem; border-radius: 1.25rem;
+            border: 1px solid #e2e8f0; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0; z-index: 10;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
+        .header-left { display: flex; align-items: center; gap: 1rem; }
         .brain-icon {
-            padding: 0.625rem;
-            background: #4f46e5;
-            border-radius: 0.75rem;
-            color: white;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-            display: flex;
+            padding: 0.625rem; background: #4f46e5; border-radius: 0.75rem;
+            color: white; box-shadow: 0 4px 12px rgba(79,70,229,0.3); display: flex;
         }
-
-        .header-title {
-            font-size: 1rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            font-style: italic;
-            text-transform: uppercase;
-        }
-
-        .header-title span {
-            font-size: 9px;
-            font-style: normal;
-            font-weight: 600;
-            color: #94a3b8;
-            margin-left: 0.5rem;
-        }
-
-        .operator-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.25rem;
-        }
-
-        .operator-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
+        .header-title { font-size: 1rem; font-weight: 900; letter-spacing: -0.03em; font-style: italic; text-transform: uppercase; }
+        .header-title span { font-size: 9px; font-style: normal; font-weight: 600; color: #94a3b8; margin-left: 0.5rem; }
+        .operator-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem; }
+        .operator-label { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
         .operator-input {
-            font-size: 11px;
-            font-weight: 700;
-            color: #4f46e5;
-            background: #eef2ff;
-            padding: 0.25rem 0.625rem;
-            border-radius: 0.5rem;
-            border: 1px solid #e0e7ff;
-            outline: none;
-            width: 5rem;
-            transition: all 0.2s;
+            font-size: 11px; font-weight: 700; color: #4f46e5; background: #eef2ff;
+            padding: 0.25rem 0.625rem; border-radius: 0.5rem; border: 1px solid #e0e7ff;
+            outline: none; width: 6rem; transition: all 0.2s;
         }
+        .operator-input:focus { border-color: #818cf8; box-shadow: 0 0 0 2px rgba(99,102,241,0.2); }
 
-        .operator-input:focus {
-            border-color: #818cf8;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
+        /* Main */
+        .main-content { flex: 1; display: flex; gap: 1rem; overflow: hidden; min-height: 0; }
 
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            gap: 1rem;
-            overflow: hidden;
-            min-height: 0;
-        }
-
-        /* Canvas Container */
+        /* Canvas */
         .canvas-container {
-            flex: 1;
-            background: #e8eaed;
-            border-radius: 1.25rem;
-            border: 1px solid #cbd5e1;
-            overflow: hidden;
-            position: relative;
-            cursor: grab;
+            flex: 1; background: #e8eaed; border-radius: 1.25rem; border: 1px solid #cbd5e1;
+            overflow: hidden; position: relative; cursor: grab;
             background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
             background-size: 24px 24px;
         }
-
-        .canvas-container.panning {
-            cursor: grabbing;
-        }
-
-        /* Canvas */
+        .canvas-container.panning { cursor: grabbing; }
         .canvas {
-            position: absolute;
-            left: 40px;
-            top: 40px;
-            transform-origin: 0 0;
-            background: white;
-            padding: 2rem;
-            min-width: 800px;
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);
+            position: absolute; left: 40px; top: 40px; transform-origin: 0 0;
+            background: white; padding: 2rem; min-width: 800px;
+            border-radius: 1.5rem; box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);
         }
 
-        /* Zoom Controls */
-        .zoom-controls {
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.375rem;
-            z-index: 1000;
-        }
-
+        /* Zoom */
+        .zoom-controls { position: absolute; bottom: 1rem; right: 1rem; display: flex; flex-direction: column; gap: 0.375rem; z-index: 1000; }
         .zoom-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 0.5rem;
-            border: 1px solid #e2e8f0;
-            background: white;
-            color: #475569;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 500;
-            transition: all 0.15s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            width: 36px; height: 36px; border-radius: 0.5rem; border: 1px solid #e2e8f0;
+            background: white; color: #475569; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 1.25rem;
+            transition: all 0.15s; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .zoom-btn:hover { background: #f8fafc; color: #4f46e5; border-color: #c7d2fe; }
+        .zoom-level { text-align: center; font-size: 9px; font-weight: 700; color: #64748b; background: white; padding: 0.375rem; border-radius: 0.375rem; border: 1px solid #e2e8f0; }
+
+        /* Palette */
+        .holon-palette { position: absolute; bottom: 1rem; left: 1rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.5rem; }
+        .palette-label { font-size: 8px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; text-align: center; }
+        .palette-item {
+            width: 110px; height: 70px; background: white; border: 2px dashed #a5b4fc;
+            border-radius: 0.75rem; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 0.25rem; cursor: grab; transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); user-select: none;
+        }
+        .palette-item:hover { border-color: #6366f1; background: #f0f4ff; box-shadow: 0 4px 16px rgba(99,102,241,0.2); transform: translateY(-2px); }
+        .palette-item:active { cursor: grabbing; transform: scale(0.95); }
+        .palette-item-label { font-size: 9px; font-weight: 700; color: #6366f1; }
+        .drag-ghost {
+            position: fixed; pointer-events: none; z-index: 9999; opacity: 0.85;
+            background: white; border: 2px solid #6366f1; border-radius: 0.75rem;
+            padding: 0.625rem; width: 130px; height: 55px; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
         }
 
-        .zoom-btn:hover {
-            background: #f8fafc;
-            color: #4f46e5;
-            border-color: #c7d2fe;
-        }
-
-        .zoom-btn:active {
-            transform: scale(0.95);
-        }
-
-        .zoom-level {
-            text-align: center;
-            font-size: 9px;
-            font-weight: 700;
-            color: #64748b;
-            background: white;
-            padding: 0.375rem;
-            border-radius: 0.375rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        /* Section styling */
-        .main-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .section-title {
-            font-size: 10px;
-            font-weight: 800;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Operator Self Model */
-        .self-model-section {
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .self-model-box {
-            width: 280px;
-            flex-shrink: 0;
-        }
-
-        /* Actor Models Container */
-        .actor-models-container {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            flex: 1;
-        }
-
-        /* Actor Model Card */
-        .actor-model {
-            background: linear-gradient(135deg, #fafaff 0%, #f0f4ff 100%);
-            border: 2px solid #c7d2fe;
-            border-radius: 1.25rem;
-            padding: 1rem;
-            min-width: 400px;
-            max-width: 700px;
-            flex: 1;
-            height: auto;
-        }
-
-        .actor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #e0e7ff;
-        }
-
-        .actor-name-input {
-            font-size: 13px;
-            font-weight: 800;
-            color: #4f46e5;
-            background: white;
-            border: 1px solid #c7d2fe;
-            border-radius: 0.5rem;
-            padding: 0.375rem 0.75rem;
-            outline: none;
-            width: 120px;
-        }
-
-        .actor-name-input:focus {
-            border-color: #818cf8;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-
-        .actor-notation {
-            font-size: 10px;
-            font-weight: 700;
-            color: #6366f1;
-            background: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            border: 1px solid #e0e7ff;
-        }
-
-        .actor-delete-btn {
-            background: #fee2e2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.375rem;
-            font-size: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .actor-delete-btn:hover {
-            background: #fecaca;
-        }
-
-        /* Actor direct model */
-        .actor-direct-model {
-            background: white;
-            border: 1px solid #e0e7ff;
-            border-radius: 0.75rem;
-            padding: 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-
-        /* Nested sections */
-        .nested-section {
-            margin-bottom: 0.75rem;
-        }
-
-        .nested-section-label {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            font-size: 8px;
-            font-weight: 800;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-        }
-
-        .nested-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
-            align-items: start;
-        }
-
-        .nested-grid-3 {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .nested-threshold {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem 0;
-            margin: 0.5rem 0;
-            position: relative;
-        }
-
-        .nested-threshold::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 1px;
-            border-top: 1px dashed #c7d2fe;
-        }
-
-        .nested-threshold-label {
-            background: #f0f4ff;
-            padding: 0.125rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 7px;
-            font-weight: 800;
-            color: #6366f1;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            position: relative;
-            border: 1px solid #e0e7ff;
-        }
-
-        /* Sub-actors section */
-        .sub-actors-section {
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px dashed #c7d2fe;
-        }
-
-        .sub-actor {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-        }
-
-        .sub-actor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .sub-actor-name-input {
-            font-size: 11px;
-            font-weight: 700;
-            color: #475569;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.375rem;
-            padding: 0.25rem 0.5rem;
-            outline: none;
-            width: 100px;
-        }
-
-        /* Add buttons */
-        .add-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.375rem;
-            padding: 0.5rem 1rem;
-            background: white;
-            border: 2px dashed #c7d2fe;
-            border-radius: 0.75rem;
-            color: #6366f1;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-width: 160px;
-            min-height: 80px;
-        }
-
-        .add-btn:hover {
-            background: #f0f4ff;
-            border-color: #818cf8;
-        }
-
-        .add-btn-small {
-            padding: 0.375rem 0.75rem;
-            min-width: auto;
-            min-height: auto;
-            font-size: 10px;
-            border-radius: 0.5rem;
-        }
-
-        /* Holon Box */
-        .holon-box {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 0.625rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            min-height: 70px;
-            height: auto;
-            display: flex;
-            flex-direction: column;
-            overflow: visible;
-        }
-
-        .holon-box:hover {
-            border-color: #a5b4fc;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
-        }
-
-        .holon-box.active {
-            border-color: #6366f1;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-            background: #fafaff;
-        }
-
-        .holon-box.shadow-type {
-            background: #fffbfb;
-            border-color: #fecdd3;
-        }
-
-        .holon-box.shadow-type:hover {
-            border-color: #fda4af;
-        }
-
-        .holon-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.375rem;
-        }
-
-        .holon-notation {
-            font-size: 10px;
-            font-weight: 800;
-            color: #475569;
-            letter-spacing: -0.02em;
-        }
-
-        .holon-box.active .holon-notation {
-            color: #4f46e5;
-        }
-
-        .holon-box.shadow-type .holon-notation {
-            color: #e11d48;
-        }
-
-        .holon-status {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #e2e8f0;
-        }
-
-        .holon-box.active .holon-status {
-            background: #6366f1;
-        }
-
-        .holon-description {
-            font-size: 9px;
-            color: #64748b;
-            line-height: 1.4;
-            font-style: italic;
-        }
-
-        .holon-box.shadow-type .holon-description {
-            color: #be185d;
-        }
-
-        .holon-notes-preview {
-            margin-top: 0.5rem;
-            padding-top: 0.375rem;
-            border-top: 1px solid #f1f5f9;
-            font-size: 9px;
-            color: #94a3b8;
-        }
-
-        .holon-notes-preview ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .holon-notes-preview li {
-            border-left: 2px solid #c7d2fe;
-            padding-left: 0.5rem;
-            color: #475569;
-            line-height: 1.4;
-        }
-
-        .shadow-badge {
-            font-size: 6px;
-            font-weight: 800;
-            color: #f43f5e;
-            background: #fff1f2;
-            padding: 0.125rem 0.375rem;
-            border-radius: 9999px;
-            border: 1px solid #fecdd3;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Threshold Divider */
-        .threshold {
-            position: relative;
-            padding: 1rem 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .threshold::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 50%;
-            height: 2px;
-            border-top: 2px dashed #cbd5e1;
-        }
-
+        /* Threshold */
+        .threshold { position: relative; padding: 0.75rem 0; display: flex; justify-content: center; }
+        .threshold::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; border-top: 2px dashed #cbd5e1; }
         .threshold-label {
-            position: relative;
-            background: white;
-            padding: 0.375rem 1.5rem;
-            border-radius: 9999px;
-            border: 1px solid #e2e8f0;
-            font-size: 9px;
-            font-weight: 800;
-            color: #6366f1;
-            text-transform: uppercase;
-            letter-spacing: 0.4em;
+            position: relative; background: white; padding: 0.25rem 1.25rem;
+            border-radius: 9999px; border: 1px solid #e2e8f0; font-size: 8px;
+            font-weight: 800; color: #6366f1; text-transform: uppercase; letter-spacing: 0.3em;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
+        .threshold-label.nested { font-size: 7px; padding: 0.125rem 0.75rem; letter-spacing: 0.2em; background: #f8fafc; border-color: #e0e7ff; }
 
-        /* LOF Section */
-        .lof-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            align-items: start;
+        /* Section labels */
+        .section-label {
+            display: flex; align-items: center; gap: 0.375rem;
+            font-size: 9px; font-weight: 800; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.75rem;
         }
+        .section-label.sm { font-size: 7px; margin-bottom: 0.5rem; letter-spacing: 0.15em; }
 
-        /* Detail Panel */
+        /* Holon row (flex container for holons) */
+        .holon-row {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-start;
+        }
+        .holon-row.drop-zone { border-radius: 0.5rem; padding: 0.25rem; margin: -0.25rem; transition: all 0.15s; min-height: 40px; }
+        .holon-row.drop-hover { outline: 2.5px dashed #6366f1; outline-offset: 2px; background: rgba(238,242,255,0.5); }
+
+        /* Holon box */
+        .holon-box {
+            background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
+            padding: 0.5rem 0.625rem; cursor: pointer; transition: all 0.2s;
+            min-height: 54px; min-width: 110px; flex: 0 1 auto;
+            display: flex; flex-direction: column; position: relative; overflow: visible;
+        }
+        .holon-box:hover { border-color: #a5b4fc; box-shadow: 0 4px 12px rgba(99,102,241,0.1); }
+        .holon-box.active { border-color: #6366f1; box-shadow: 0 4px 12px rgba(99,102,241,0.2); background: #fafaff; }
+        .holon-box .h-not { font-size: 10px; font-weight: 800; color: #475569; margin-bottom: 0.125rem; }
+        .holon-box.active .h-not { color: #4f46e5; }
+        .holon-box .h-desc { font-size: 8px; color: #94a3b8; line-height: 1.3; font-style: italic; }
+        .holon-box .h-preview { margin-top: 0.375rem; padding-top: 0.25rem; border-top: 1px solid #f1f5f9; font-size: 8px; color: #475569; }
+        .holon-box .h-preview li { border-left: 2px solid #c7d2fe; padding-left: 0.375rem; margin-bottom: 0.125rem; list-style: none; }
+        .holon-box.custom-type { border: 2px solid #a5b4fc; }
+        .holon-box.custom-type .h-not { color: #6366f1; }
+        .holon-delete {
+            position: absolute; top: -6px; right: -6px; width: 18px; height: 18px;
+            background: #fee2e2; border: 1px solid #fecaca; border-radius: 50%;
+            color: #dc2626; font-size: 11px; font-weight: 700; cursor: pointer;
+            display: none; align-items: center; justify-content: center; line-height: 1; z-index: 5;
+        }
+        .holon-box:hover .holon-delete { display: flex; }
+
+        /* Actor container (_bevidst) */
+        .actor-container {
+            background: linear-gradient(135deg, #fafaff 0%, #f0f4ff 100%);
+            border: 2px solid #c7d2fe; border-radius: 1rem; padding: 0.75rem;
+            flex: 1 1 320px; min-width: 280px; position: relative; overflow: visible;
+        }
+        .actor-container[data-depth="1"] { background: linear-gradient(135deg, #fdf9ff 0%, #f5f0ff 100%); border-color: #d8b4fe; }
+        .actor-container[data-depth="2"] { background: linear-gradient(135deg, #fff5f7 0%, #fdf0f5 100%); border-color: #fbcfe8; }
+        .actor-container[data-depth="3"] { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: #fde68a; }
+        .actor-container-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.625rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.06); gap: 0.5rem;
+        }
+        .actor-name-input {
+            font-size: 12px; font-weight: 800; color: #4f46e5; background: white;
+            border: 1px solid #c7d2fe; border-radius: 0.375rem; padding: 0.25rem 0.5rem;
+            outline: none; width: 90px;
+        }
+        .actor-name-input:focus { border-color: #818cf8; box-shadow: 0 0 0 2px rgba(99,102,241,0.2); }
+        .actor-notation-badge {
+            font-size: 9px; font-weight: 700; color: #6366f1; background: white;
+            padding: 0.125rem 0.5rem; border-radius: 9999px; border: 1px solid #e0e7ff; white-space: nowrap;
+        }
+        .actor-delete-btn {
+            background: #fee2e2; border: 1px solid #fecaca; color: #dc2626;
+            padding: 0.2rem 0.5rem; border-radius: 0.375rem; font-size: 9px;
+            font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .actor-delete-btn:hover { background: #fecaca; }
+        .bevidst-textarea {
+            width: 100%; min-height: 28px; max-height: 120px; padding: 0.375rem 0.5rem;
+            margin-bottom: 0.5rem; background: rgba(255,255,255,0.7); border: 1px solid #e0e7ff;
+            border-radius: 0.5rem; font-size: 10px; font-style: italic; color: #475569;
+            font-family: inherit; line-height: 1.5; resize: vertical; outline: none;
+            transition: border-color 0.15s;
+        }
+        .bevidst-textarea:focus { border-color: #818cf8; background: white; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+        .bevidst-textarea::placeholder { color: #a5b4fc; font-style: italic; }
+
+        /* Add button */
+        .add-btn {
+            display: flex; align-items: center; justify-content: center; gap: 0.375rem;
+            padding: 0.375rem 0.75rem; background: white; border: 2px dashed #c7d2fe;
+            border-radius: 0.75rem; color: #6366f1; font-size: 10px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; min-width: 110px; min-height: 45px;
+        }
+        .add-btn:hover { background: #f0f4ff; border-color: #818cf8; }
+        .add-btn.sm { min-width: auto; min-height: auto; padding: 0.25rem 0.5rem; font-size: 9px; border-radius: 0.5rem; }
+
+        /* Resize */
+        .resize-handle { position: absolute; z-index: 10; }
+        .resize-handle-se { bottom: -4px; right: -4px; width: 12px; height: 12px; cursor: se-resize; }
+        .resize-handle-se::after { content: ''; position: absolute; bottom: 3px; right: 3px; width: 6px; height: 6px; border-right: 2px solid #c7d2fe; border-bottom: 2px solid #c7d2fe; }
+        .resize-handle-e { right: -3px; top: 10px; bottom: 10px; width: 6px; cursor: e-resize; }
+        .resize-handle-s { bottom: -3px; left: 10px; right: 10px; height: 6px; cursor: s-resize; }
+        .resize-handle:hover { background: rgba(99,102,241,0.12); border-radius: 2px; }
+
+        /* Detail panel */
         .detail-panel {
-            background: white;
-            border-radius: 1.25rem;
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
-            transition: width 0.3s ease, opacity 0.2s;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            width: 0;
-            opacity: 0;
+            background: white; border-radius: 1.25rem; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            transition: width 0.3s ease, opacity 0.2s; overflow: hidden;
+            display: flex; flex-direction: column; width: 0; opacity: 0;
         }
-
-        .detail-panel.open {
-            width: 360px;
-            opacity: 1;
-        }
-
-        .detail-inner {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            min-width: 360px;
-        }
-
-        .detail-header {
-            padding: 1.25rem;
-            border-bottom: 1px solid #f1f5f9;
-            background: #fafbfc;
-            flex-shrink: 0;
-        }
-
-        .detail-header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
-        }
-
-        .detail-title {
-            font-size: 1rem;
-            font-weight: 900;
-            color: #4f46e5;
-            letter-spacing: -0.02em;
-        }
-
-        .detail-subtitle {
-            font-size: 10px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-top: 0.125rem;
-        }
-
-        .close-btn {
-            padding: 0.375rem;
-            background: transparent;
-            border: none;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            color: #94a3b8;
-            transition: all 0.2s;
-        }
-
-        .close-btn:hover {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .info-box {
-            background: white;
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e0e7ff;
-        }
-
-        .info-box p {
-            font-size: 11px;
-            font-style: italic;
-            color: #475569;
-            line-height: 1.5;
-        }
-
-        .detail-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.25rem;
-        }
-
-        .detail-label {
-            font-size: 9px;
-            font-weight: 800;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
+        .detail-panel.open { width: 360px; opacity: 1; }
+        .detail-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; min-width: 360px; }
+        .detail-header { padding: 1.25rem; border-bottom: 1px solid #f1f5f9; background: #fafbfc; flex-shrink: 0; }
+        .detail-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .detail-title { font-size: 1rem; font-weight: 900; color: #4f46e5; letter-spacing: -0.02em; }
+        .detail-subtitle { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.125rem; }
+        .close-btn { padding: 0.375rem; background: transparent; border: none; border-radius: 0.375rem; cursor: pointer; color: #94a3b8; transition: all 0.2s; }
+        .close-btn:hover { background: #f1f5f9; color: #475569; }
+        .info-box { background: white; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid #e0e7ff; }
+        .info-box p { font-size: 11px; font-style: italic; color: #475569; line-height: 1.5; }
+        .detail-body { flex: 1; overflow-y: auto; padding: 1.25rem; }
+        .detail-label { font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
         .detail-textarea {
-            width: 100%;
-            min-height: 250px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            font-size: 12px;
-            color: #334155;
-            outline: none;
-            resize: none;
-            font-family: inherit;
-            line-height: 1.6;
+            width: 100%; min-height: 250px; background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 0.75rem; padding: 1rem; font-size: 12px; color: #334155;
+            outline: none; resize: none; font-family: inherit; line-height: 1.6;
         }
-
-        .detail-textarea:focus {
-            border-color: #c7d2fe;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
-        }
+        .detail-textarea:focus { border-color: #c7d2fe; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
 
         /* Footer */
         .footer {
-            text-align: center;
-            padding: 0.75rem;
-            font-size: 8px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            flex-shrink: 0;
-            background: white;
-            border-radius: 0.75rem;
+            text-align: center; padding: 0.75rem; font-size: 8px; font-weight: 700;
+            color: #94a3b8; text-transform: uppercase; letter-spacing: 0.2em;
+            flex-shrink: 0; background: white; border-radius: 0.75rem;
         }
 
-        /* Export/Import buttons */
+        /* Buttons */
         .export-btn, .import-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+            border: none; border-radius: 0.5rem; color: white; font-size: 11px;
+            font-weight: 700; cursor: pointer; transition: all 0.15s;
         }
+        .export-btn { background: #10b981; } .export-btn:hover { background: #059669; }
+        .import-btn { background: #6366f1; } .import-btn:hover { background: #4f46e5; }
 
-        .export-btn {
-            background: #10b981;
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center; z-index: 2000; padding: 2rem;
         }
+        .modal-overlay.open { display: flex; }
+        .modal-content { background: white; border-radius: 1rem; width: 100%; max-width: 800px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; border-bottom: 1px solid #e2e8f0; }
+        .modal-header h2 { font-size: 1rem; font-weight: 800; color: #1e293b; }
+        .modal-close { background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0.25rem; border-radius: 0.25rem; }
+        .modal-close:hover { background: #f1f5f9; color: #475569; }
+        .modal-body { flex: 1; padding: 1.25rem; overflow-y: auto; }
+        .modal-textarea { width: 100%; min-height: 400px; padding: 1rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-family: 'Consolas',monospace; font-size: 11px; line-height: 1.6; color: #334155; resize: vertical; }
+        .modal-textarea:focus { outline: none; border-color: #818cf8; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1rem 1.25rem; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 1rem 1rem; }
+        .modal-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1.25rem; background: #4f46e5; border: none; border-radius: 0.5rem; color: white; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .modal-btn:hover { background: #4338ca; }
+        .modal-btn.copied { background: #10b981; }
+        .modal-btn.secondary { background: #64748b; }
 
-        .export-btn:hover {
-            background: #059669;
+        /* Conflict tags */
+        .holon-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 0.25rem; }
+        .holon-tag {
+            font-size: 7px; font-weight: 900; letter-spacing: 0.05em;
+            padding: 1px 6px; border-radius: 9999px; line-height: 1.5;
+            text-transform: uppercase; white-space: nowrap;
         }
+        .holon-tag-K1 { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+        .holon-tag-K2 { background: #f3e8ff; color: #7c3aed; border: 1px solid #c4b5fd; }
+        .holon-tag-K3 { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+        .holon-tag-K4 { background: #dbeafe; color: #2563eb; border: 1px solid #93c5fd; }
+        .holon-tag-K5 { background: #d1fae5; color: #059669; border: 1px solid #6ee7b7; }
+        .holon-tag-K6 { background: #ffe4e6; color: #e11d48; border: 1px solid #fda4af; }
 
-        .import-btn {
-            background: #6366f1;
+        /* Tag picker in detail panel */
+        .tag-picker { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.5rem; }
+        .tag-picker-btn {
+            font-size: 9px; font-weight: 800; padding: 0.25rem 0.625rem;
+            border-radius: 9999px; cursor: pointer; transition: all 0.15s;
+            border: 2px solid transparent; opacity: 0.5;
         }
+        .tag-picker-btn:hover { opacity: 0.8; transform: scale(1.05); }
+        .tag-picker-btn.selected { opacity: 1; transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .tag-picker-btn-K1 { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+        .tag-picker-btn-K2 { background: #f3e8ff; color: #7c3aed; border-color: #c4b5fd; }
+        .tag-picker-btn-K3 { background: #fef9c3; color: #a16207; border-color: #fde047; }
+        .tag-picker-btn-K4 { background: #dbeafe; color: #2563eb; border-color: #93c5fd; }
+        .tag-picker-btn-K5 { background: #d1fae5; color: #059669; border-color: #6ee7b7; }
+        .tag-picker-btn-K6 { background: #ffe4e6; color: #e11d48; border-color: #fda4af; }
 
-        .import-btn:hover {
-            background: #4f46e5;
-        }
-
-        /* Export Modal */
-        .export-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 2rem;
-        }
-
-        .export-modal.open {
-            display: flex;
-        }
-
-        .export-modal-content {
-            background: white;
-            border-radius: 1rem;
-            width: 100%;
-            max-width: 800px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-
-        .export-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .export-modal-header h2 {
-            font-size: 1rem;
-            font-weight: 800;
-            color: #1e293b;
-        }
-
-        .export-modal-close {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 0.25rem;
-        }
-
-        .export-modal-close:hover {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .export-modal-body {
-            flex: 1;
-            padding: 1.25rem;
-            overflow-y: auto;
-        }
-
-        .export-textarea {
-            width: 100%;
-            min-height: 400px;
-            padding: 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 11px;
-            line-height: 1.6;
-            color: #334155;
-            resize: vertical;
-        }
-
-        .export-textarea:focus {
-            outline: none;
-            border-color: #818cf8;
-        }
-
-        .export-modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding: 1rem 1.25rem;
-            border-top: 1px solid #e2e8f0;
-            background: #f8fafc;
-            border-radius: 0 0 1rem 1rem;
-        }
-
-        .export-copy-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.625rem 1.25rem;
-            background: #4f46e5;
-            border: none;
-            border-radius: 0.5rem;
-            color: white;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .export-copy-btn:hover {
-            background: #4338ca;
-        }
-
-        .export-copy-btn.copied {
-            background: #10b981;
-        }
-
-        .export-stats {
-            font-size: 11px;
-            color: #64748b;
-            margin-bottom: 0.75rem;
-        }
-
-        /* Icons */
         .icon { width: 20px; height: 20px; }
-        .icon-sm { width: 12px; height: 12px; }
         .icon-xs { width: 10px; height: 10px; }
-
-        .text-amber { color: #f59e0b; }
-        .fill-amber { fill: #f59e0b; }
-        .text-indigo { color: #6366f1; }
-
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="header-left">
                 <div class="brain-icon">
@@ -912,50 +307,43 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="header-title">SMFI NESTED ACTOR MAPPER <span>v. 3.0</span></h1>
+                    <h1 class="header-title">SMFI NESTED ACTOR MAPPER <span>v. 4.0</span></h1>
                     <div class="operator-row">
-                        <span class="operator-label">Primær Operatør:</span>
-                        <input type="text" id="primaryName" value="Jacob" class="operator-input">
+                        <span class="operator-label">Operator:</span>
+                        <input type="text" id="operatorNameInput" value="Jacob" class="operator-input">
                     </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="import-btn" onclick="openImportModal()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Importér
+            <div style="display:flex;gap:0.5rem;">
+                <button class="import-btn" onclick="openModal('importModal')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Import
                 </button>
-                <button class="export-btn" onclick="openExportModal()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                    Eksportér til LLM
+                <button class="export-btn" onclick="openExport()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Eksport
                 </button>
             </div>
         </header>
 
         <div class="main-content">
-            <!-- Canvas Container -->
             <div class="canvas-container" id="canvasContainer">
-                <div class="canvas" id="canvas">
-                    <!-- Content will be rendered by JavaScript -->
+                <div class="canvas" id="canvas"></div>
+                <div class="holon-palette">
+                    <div class="palette-label">Traek ind</div>
+                    <div class="palette-item" id="paletteHolon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>
+                        <span class="palette-item-label">Tom Holon</span>
+                    </div>
                 </div>
-
-                <!-- Zoom Controls -->
                 <div class="zoom-controls">
                     <button class="zoom-btn" id="zoomIn">+</button>
                     <div class="zoom-level" id="zoomLevel">100%</div>
-                    <button class="zoom-btn" id="zoomOut">−</button>
-                    <button class="zoom-btn" id="zoomReset" style="font-size: 10px;">⊙</button>
+                    <button class="zoom-btn" id="zoomOut">&minus;</button>
+                    <button class="zoom-btn" id="zoomReset" style="font-size:10px;">&odot;</button>
                 </div>
             </div>
 
-            <!-- Detail Panel -->
             <aside class="detail-panel" id="detailPanel">
                 <div class="detail-inner">
                     <div class="detail-header">
@@ -965,1191 +353,519 @@
                                 <p class="detail-subtitle">Holon-Editor</p>
                             </div>
                             <button class="close-btn" id="closeBtn">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-                                </svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                             </button>
                         </div>
-                        <div class="info-box">
-                            <p id="detailDescription">Beskrivelse</p>
-                        </div>
+                        <div class="info-box"><p id="detailDescription">Beskrivelse</p></div>
                     </div>
                     <div class="detail-body">
-                        <h4 class="detail-label">Observationer & Hypoteser</h4>
+                        <h4 class="detail-label">Konflikt-tags</h4>
+                        <div class="tag-picker" id="tagPicker"></div>
+                        <h4 class="detail-label" style="margin-top:1rem;">Observationer & Hypoteser</h4>
                         <textarea id="detailTextarea" class="detail-textarea" placeholder="- Indtast observationer her..."></textarea>
                     </div>
                 </div>
             </aside>
         </div>
 
-        <footer class="footer" id="footer">
-            Epistemisk Kohærens via Lucidiansk Simulation
-        </footer>
+        <footer class="footer" id="footer">Epistemisk Kohaerens via Lucidiansk Simulation</footer>
     </div>
 
     <!-- Export Modal -->
-    <div class="export-modal" id="exportModal">
-        <div class="export-modal-content">
-            <div class="export-modal-header">
-                <h2>Eksportér SMFI-analyse til LLM</h2>
-                <button class="export-modal-close" onclick="closeExportModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="export-modal-body">
-                <div class="export-stats" id="exportStats"></div>
-                <textarea class="export-textarea" id="exportTextarea" readonly></textarea>
-            </div>
-            <div class="export-modal-footer">
-                <button class="export-copy-btn" id="copyBtn" onclick="copyExportText()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                    </svg>
-                    <span id="copyBtnText">Kopiér til udklipsholder</span>
-                </button>
-            </div>
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Eksport SMFI-analyse</h2><button class="modal-close" onclick="closeModal('exportModal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+            <div class="modal-body"><div id="exportStats" style="font-size:11px;color:#64748b;margin-bottom:0.75rem;"></div><textarea class="modal-textarea" id="exportTextarea" readonly></textarea></div>
+            <div class="modal-footer"><button class="modal-btn" id="copyBtn" onclick="copyExport()"><span id="copyBtnText">Kopier</span></button></div>
         </div>
     </div>
 
     <!-- Import Modal -->
-    <div class="export-modal" id="importModal">
-        <div class="export-modal-content">
-            <div class="export-modal-header">
-                <h2>Importér SMFI-analyse</h2>
-                <button class="export-modal-close" onclick="closeImportModal()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="export-modal-body">
-                <div class="export-stats" id="importStats" style="margin-bottom: 0.75rem; color: #64748b; font-size: 11px;">
-                    Indsæt en eksporteret SMFI-analyse herunder. Data vil blive importeret baseret på notation.
-                </div>
-                <div style="margin-bottom: 0.75rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 11px; color: #475569; cursor: pointer;">
-                        <input type="checkbox" id="overwriteExisting" style="width: 14px; height: 14px; cursor: pointer;">
-                        Overskriv eksisterende data (hvis ikke markeret, tilføjes kun til tomme holoner)
-                    </label>
-                </div>
-                <textarea class="export-textarea" id="importTextarea" placeholder="Indsæt eksporteret SMFI-analyse her..."></textarea>
-            </div>
-            <div class="export-modal-footer">
-                <button class="export-copy-btn" style="background: #64748b;" onclick="closeImportModal()">
-                    Annullér
-                </button>
-                <button class="export-copy-btn" id="importBtn" onclick="processImport()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    <span>Importér Data</span>
-                </button>
-            </div>
+    <div class="modal-overlay" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header"><h2>Import SMFI-analyse</h2><button class="modal-close" onclick="closeModal('importModal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+            <div class="modal-body"><textarea class="modal-textarea" id="importTextarea" placeholder="Indsaet eksporteret tekst..."></textarea></div>
+            <div class="modal-footer"><button class="modal-btn secondary" onclick="closeModal('importModal')">Annuller</button><button class="modal-btn" onclick="processImport()">Importer</button></div>
         </div>
     </div>
 
-    <script>
-        // ===== STATE =====
-        let primaryName = "Jacob";
-        let activeHolonKey = null;
+<script>
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let operatorName = "Jacob";
+let activeKey = null;
+let holonNotes = {};
+let holonSizes = {};
+let customHolons = {}; // zoneId -> [{id, title}]
+let holonTags = {}; // holonKey -> ['K1', 'K3', ...]
 
-        // Dynamic actors structure
-        let actors = [
-            { id: 'actor_1', name: 'Line', subActors: [] }
-        ];
+const TAG_DEFS = [
+    { id: 'K1', label: 'K1', color: '#dc2626' },
+    { id: 'K2', label: 'K2', color: '#7c3aed' },
+    { id: 'K3', label: 'K3', color: '#a16207' },
+    { id: 'K4', label: 'K4', color: '#2563eb' },
+    { id: 'K5', label: 'K5', color: '#059669' },
+    { id: 'K6', label: 'K6', color: '#e11d48' },
+];
 
-        // Holon notes storage
-        let holonNotes = {};
+// Recursive actor tree
+let actors = [
+    { id: 'a1', name: 'Line', children: [] }
+];
 
-        // Canvas state
-        let scale = 1;
-        let panX = 40;
-        let panY = 40;
-        let isPanning = false;
-        let startX = 0;
-        let startY = 0;
+let _id = 100;
+function uid(p) { return p + '_' + (_id++) + '_' + Date.now(); }
 
-        const MIN_SCALE = 0.3;
-        const MAX_SCALE = 2.5;
-        const SCALE_STEP = 0.1;
+// Canvas
+let scale = 1, panX = 40, panY = 40, isPanning = false, sx = 0, sy = 0;
 
-        // ===== DOM ELEMENTS =====
-        const primaryNameInput = document.getElementById('primaryName');
-        const canvasContainer = document.getElementById('canvasContainer');
-        const canvas = document.getElementById('canvas');
-        const detailPanel = document.getElementById('detailPanel');
-        const detailTitle = document.getElementById('detailTitle');
-        const detailDescription = document.getElementById('detailDescription');
-        const detailTextarea = document.getElementById('detailTextarea');
-        const closeBtn = document.getElementById('closeBtn');
-        const footer = document.getElementById('footer');
-        const zoomInBtn = document.getElementById('zoomIn');
-        const zoomOutBtn = document.getElementById('zoomOut');
-        const zoomResetBtn = document.getElementById('zoomReset');
-        const zoomLevelDisplay = document.getElementById('zoomLevel');
+// DOM refs
+const CC = document.getElementById('canvasContainer');
+const CV = document.getElementById('canvas');
+const DP = document.getElementById('detailPanel');
+const DT = document.getElementById('detailTitle');
+const DD = document.getElementById('detailDescription');
+const DA = document.getElementById('detailTextarea');
 
-        // ===== NOTATION HELPERS =====
-        function getInitial(name) {
-            return name ? name.charAt(0).toUpperCase() : '?';
+// ═══════════════════════════════════════
+// NOTATION
+// ═══════════════════════════════════════
+function I(n) { return n ? n.charAt(0).toUpperCase() : '?'; }
+
+// notation(['Line'], 'Line', '_Luc.mod.') -> J(L(L))_Luc.mod.
+// notation([], 'Jacob', '_Luc.mod.') -> J(J)_Luc.mod.
+function N(nesting, target, suffix) {
+    const path = [...nesting, target];
+    let s = I(path[path.length - 1]);
+    for (let i = path.length - 2; i >= 0; i--) s = I(path[i]) + '(' + s + ')';
+    return I(operatorName) + '(' + s + ')' + (suffix || '');
+}
+
+function D(nesting, target, suffix) {
+    const owner = nesting.length > 0 ? nesting[nesting.length - 1] : operatorName;
+    if (suffix === '_Luc.mod.') return owner + 's bevidste selvmodel.';
+    if (suffix === '_bevidst') return operatorName + 's bevidste model af ' + target + 's felt.';
+    if (suffix === '_ideel') return 'Idealiseret billede af ' + target + '.';
+    if (suffix === '_faktisk') return 'Faktisk billede af ' + target + '.';
+    if (!suffix && nesting.length > 0) return owner + 's model af ' + target + '.';
+    return '';
+}
+
+function K(nesting, target, suffix) {
+    return [...nesting.map(I), I(target), suffix || 'main'].join('/');
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function render() {
+    CV.innerHTML = renderField([], actors, 0);
+    document.getElementById('footer').textContent = 'Epistemisk Kohaerens \u00b7 ' + operatorName.toUpperCase();
+    requestAnimationFrame(attachResize);
+}
+
+function renderField(nesting, fieldActors, depth) {
+    const owner = nesting.length > 0 ? nesting[nesting.length - 1] : operatorName;
+    const isTop = depth === 0;
+    const lbl = isTop ? '' : ' sm';
+    const thr = isTop ? '' : ' nested';
+    const zone = nesting.length > 0 ? nesting.map(I).join('/') : 'top';
+
+    // MOF holons
+    let mofH = renderH(nesting, owner, '_Luc.mod.');
+    if (nesting.length > 0 && owner !== operatorName) {
+        mofH += renderH(nesting, operatorName, '');
+    }
+    // Custom MOF holons
+    (customHolons[zone + '/mof'] || []).forEach(ch => { mofH += renderCH(ch, zone + '/mof'); });
+
+    // Actor containers
+    const nestJson = JSON.stringify(nesting).replace(/"/g, '&quot;');
+    let actorsH = fieldActors.map(a => {
+        const cn = N(nesting, a.name, '_bevidst');
+        const bKey = K(nesting, a.name, '_bevidst');
+        const safeBKey = bKey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        const bNotes = (holonNotes[bKey] || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        return '<div class="actor-container" data-depth="' + depth + '">' +
+            '<div class="actor-container-header">' +
+                '<input type="text" class="actor-name-input" value="' + a.name + '" ' +
+                    'onchange="renameActor(\'' + a.id + '\',this.value)" onclick="event.stopPropagation()" placeholder="Navn">' +
+                '<span class="actor-notation-badge">' + cn + '</span>' +
+                '<button class="actor-delete-btn" onclick="event.stopPropagation();deleteActor(\'' + a.id + '\')">Slet</button>' +
+            '</div>' +
+            '<textarea class="bevidst-textarea" placeholder="' + operatorName + ' opfatter ' + a.name + ' som..." ' +
+                'oninput="holonNotes[\'' + safeBKey + '\']=this.value" onclick="event.stopPropagation()">' + bNotes + '</textarea>' +
+            renderField([...nesting, a.name], a.children, depth + 1) +
+        '</div>';
+    }).join('');
+
+    actorsH += '<button class="add-btn' + (isTop ? '' : ' sm') + '" onclick="addActor(' + nestJson + ')">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>' +
+        'Tilfoej</button>';
+
+    // LOF holons
+    let lofH = renderH(nesting, owner, '_ideel') + renderH(nesting, owner, '_faktisk');
+    if (nesting.length > 0 && owner !== operatorName) {
+        lofH += renderH(nesting, operatorName, '_ideel') + renderH(nesting, operatorName, '_faktisk');
+    }
+    fieldActors.forEach(a => {
+        lofH += renderH(nesting, a.name, '_ideel') + renderH(nesting, a.name, '_faktisk');
+    });
+    (customHolons[zone + '/lof'] || []).forEach(ch => { lofH += renderCH(ch, zone + '/lof'); });
+
+    return '<div class="operator-field">' +
+        '<div class="mof-section">' +
+            '<div class="section-label' + lbl + '">' +
+                '<svg class="icon-xs" style="color:#f59e0b;fill:#f59e0b;" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' +
+                ' MOF ' + (isTop ? '(Mentalt Operativt Felt)' : '(' + owner + ')') +
+            '</div>' +
+            '<div class="holon-row drop-zone" data-zone="' + zone + '/mof">' + mofH + '</div>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem;align-items:flex-start;">' + actorsH + '</div>' +
+        '</div>' +
+        '<div class="threshold"><span class="threshold-label' + thr + '">Taerskel</span></div>' +
+        '<div class="lof-section">' +
+            '<div class="section-label' + lbl + '">' +
+                '<svg class="icon-xs" style="color:#6366f1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>' +
+                ' LOF ' + (isTop ? '(Latent Operativt Felt)' : '(' + owner + ')') +
+            '</div>' +
+            '<div class="holon-row drop-zone" data-zone="' + zone + '/lof">' + lofH + '</div>' +
+        '</div>' +
+    '</div>';
+}
+
+function renderH(nesting, target, suffix) {
+    const key = K(nesting, target, suffix);
+    const not = N(nesting, target, suffix);
+    const dsc = D(nesting, target, suffix);
+    const notes = holonNotes[key] || '';
+    const lines = notes.split('\n').filter(l => l.trim());
+    const act = activeKey === key;
+    const sz = holonSizes[key] ? 'width:' + holonSizes[key].w + 'px;height:' + holonSizes[key].h + 'px;flex:none;' : '';
+    const safeKey = key.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const safeNot = not.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const safeDsc = dsc.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g, '&quot;');
+
+    return '<div class="holon-box' + (act ? ' active' : '') + '" data-hkey="' + key + '" style="' + sz + '" ' +
+        'onclick="openH(\'' + safeKey + '\',\'' + safeNot + '\',\'' + safeDsc + '\')">' +
+        '<div class="h-not">' + not + '</div>' +
+        '<div class="h-desc">' + dsc + '</div>' +
+        renderTagBadges(key) +
+        (lines.length > 0 ? '<div class="h-preview"><ul>' + lines.map(l => '<li>' + l.replace(/^[-\u2022]\s*/, '') + '</li>').join('') + '</ul></div>' : '') +
+    '</div>';
+}
+
+function renderTagBadges(key) {
+    const tags = holonTags[key];
+    if (!tags || tags.length === 0) return '';
+    return '<div class="holon-tags">' + tags.map(t => '<span class="holon-tag holon-tag-' + t + '">' + t + '</span>').join('') + '</div>';
+}
+
+function renderCH(ch, zone) {
+    const act = activeKey === ch.id;
+    const notes = holonNotes[ch.id] || '';
+    const lines = notes.split('\n').filter(l => l.trim());
+    const sz = holonSizes[ch.id] ? 'width:' + holonSizes[ch.id].w + 'px;height:' + holonSizes[ch.id].h + 'px;flex:none;' : '';
+    const sz2 = zone.replace(/'/g, "\\'");
+    return '<div class="holon-box custom-type' + (act ? ' active' : '') + '" data-hkey="' + ch.id + '" style="' + sz + '" ' +
+        'onclick="openH(\'' + ch.id + '\',\'' + ch.title.replace(/'/g, "\\'") + '\',\'Brugerdefineret holon\')">' +
+        '<button class="holon-delete" onclick="event.stopPropagation();delCH(\'' + sz2 + '\',\'' + ch.id + '\')">&times;</button>' +
+        '<input class="actor-name-input" value="' + ch.title + '" style="font-size:10px;width:80px;margin-bottom:2px;border-color:#a5b4fc;" ' +
+            'onchange="renameCH(\'' + sz2 + '\',\'' + ch.id + '\',this.value)" onclick="event.stopPropagation()">' +
+        renderTagBadges(ch.id) +
+        (lines.length > 0 ? '<div class="h-preview"><ul>' + lines.map(l => '<li>' + l.replace(/^[-\u2022]\s*/, '') + '</li>').join('') + '</ul></div>'
+            : '<div class="h-desc">Klik for noter</div>') +
+    '</div>';
+}
+
+// ═══════════════════════════════════════
+// CUSTOM HOLONS
+// ═══════════════════════════════════════
+function addCH(zone) {
+    if (!customHolons[zone]) customHolons[zone] = [];
+    customHolons[zone].push({ id: uid('ch'), title: 'Tom Holon' });
+    render();
+}
+function delCH(zone, id) {
+    if (customHolons[zone]) customHolons[zone] = customHolons[zone].filter(c => c.id !== id);
+    delete holonNotes[id]; delete holonSizes[id];
+    if (activeKey === id) closePanel();
+    render();
+}
+function renameCH(zone, id, v) {
+    const list = customHolons[zone];
+    if (list) { const c = list.find(x => x.id === id); if (c) c.title = v || 'Tom Holon'; }
+}
+
+// ═══════════════════════════════════════
+// ACTOR MANAGEMENT
+// ═══════════════════════════════════════
+function findList(nesting) {
+    if (nesting.length === 0) return actors;
+    let list = actors;
+    for (const name of nesting) {
+        const a = list.find(x => x.name === name);
+        if (!a) return null;
+        list = a.children;
+    }
+    return list;
+}
+
+function addActor(nesting) {
+    const list = findList(nesting);
+    if (!list) return;
+    const names = list.map(a => a.name);
+    let name = 'Ny'; let c = 1;
+    while (names.includes(name)) name = 'Ny' + (++c);
+    list.push({ id: uid('a'), name, children: [] });
+    render();
+}
+
+function deleteActor(id) {
+    (function rm(list) {
+        const i = list.findIndex(a => a.id === id);
+        if (i >= 0) { list.splice(i, 1); return true; }
+        return list.some(a => rm(a.children));
+    })(actors);
+    render();
+}
+
+function renameActor(id, v) {
+    (function find(list) {
+        for (const a of list) {
+            if (a.id === id) { a.name = v || '?'; return true; }
+            if (find(a.children)) return true;
         }
+        return false;
+    })(actors);
+    render();
+}
 
-        function formatNotation(type, actorName, subActorName = null) {
-            const J = getInitial(primaryName);
-            const A = getInitial(actorName);
-            const S = subActorName ? getInitial(subActorName) : null;
+// ═══════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════
+function openH(key, title, desc) {
+    activeKey = key;
+    DT.textContent = title;
+    DD.textContent = desc;
+    DA.value = holonNotes[key] || '';
+    renderTagPicker(key);
+    DP.classList.add('open');
+    render();
+    setTimeout(() => DA.focus(), 200);
+}
 
-            switch(type) {
-                // Self models
-                case 'self_luc': return `${J}(${J})_Luc.mod.`;
-                case 'self_ideel': return `${J}(${J})_idél`;
+function renderTagPicker(key) {
+    const picker = document.getElementById('tagPicker');
+    const current = holonTags[key] || [];
+    picker.innerHTML = TAG_DEFS.map(t => {
+        const sel = current.includes(t.id) ? ' selected' : '';
+        return '<button class="tag-picker-btn tag-picker-btn-' + t.id + sel + '" ' +
+            'onclick="event.stopPropagation();toggleTag(\'' + key.replace(/'/g,"\\'") + '\',\'' + t.id + '\')">' + t.label + '</button>';
+    }).join('');
+}
 
-                // Actor models (top level)
-                case 'actor_container': return `${J}(${A})_Luc.mod.`;
-                case 'actor_luc': return `${J}(${A})_Luc.mod.`;
-                case 'actor_ideel': return `${J}(${A})_idél`;
-                case 'actor_skygge': return `${J}(${A})_Skygge`;
+function toggleTag(key, tagId) {
+    if (!holonTags[key]) holonTags[key] = [];
+    const idx = holonTags[key].indexOf(tagId);
+    if (idx >= 0) holonTags[key].splice(idx, 1);
+    else holonTags[key].push(tagId);
+    if (holonTags[key].length === 0) delete holonTags[key];
+    renderTagPicker(key);
+    render();
+}
 
-                // Nested actor MOF
-                case 'nested_self_luc': return `${J}(${A}(${A}))_Luc.mod.`;
-                case 'nested_primary_luc': return `${J}(${A}(${J}))_Luc.mod.`;
+function closePanel() {
+    activeKey = null;
+    DP.classList.remove('open');
+    render();
+}
 
-                // Nested actor LOF
-                case 'nested_self_ideel': return `${J}(${A}(${A}))_idél`;
-                case 'nested_primary_ideel': return `${J}(${A}(${J}))_idél`;
-                case 'nested_skygge': return `${J}(${A})_Skygge`;
+document.getElementById('closeBtn').addEventListener('click', closePanel);
+DA.addEventListener('input', e => { if (activeKey) holonNotes[activeKey] = e.target.value; });
 
-                // Sub-actor models
-                case 'subactor_luc': return `${J}(${A}(${S}))_Luc.mod.`;
-                case 'subactor_ideel': return `${J}(${A}(${S}))_idél`;
+// ═══════════════════════════════════════
+// ZOOM & PAN
+// ═══════════════════════════════════════
+function updateT() {
+    CV.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + scale + ')';
+    document.getElementById('zoomLevel').textContent = Math.round(scale * 100) + '%';
+}
 
-                // Sub-actor nested
-                case 'subactor_nested_self': return `${J}(${A}(${S}(${S})))_Luc.mod.`;
-                case 'subactor_nested_actor': return `${J}(${A}(${S}(${A})))_Luc.mod.`;
-                case 'subactor_nested_primary': return `${J}(${A}(${S}(${J})))_Luc.mod.`;
+function zoom(d, cx, cy) {
+    const old = scale;
+    scale = Math.min(2.5, Math.max(0.3, scale + d));
+    if (cx !== undefined) {
+        const r = CC.getBoundingClientRect();
+        const mx = cx - r.left, my = cy - r.top;
+        panX = mx - (mx - panX) * (scale / old);
+        panY = my - (my - panY) * (scale / old);
+    }
+    updateT();
+}
 
-                default: return type;
-            }
-        }
+document.getElementById('zoomIn').addEventListener('click', () => zoom(0.1));
+document.getElementById('zoomOut').addEventListener('click', () => zoom(-0.1));
+document.getElementById('zoomReset').addEventListener('click', () => { scale = 1; panX = 40; panY = 40; updateT(); });
+CC.addEventListener('wheel', e => { e.preventDefault(); zoom(e.deltaY < 0 ? 0.1 : -0.1, e.clientX, e.clientY); }, { passive: false });
 
-        function getDescription(type, actorName, subActorName = null) {
-            const J = primaryName;
-            const A = actorName;
-            const S = subActorName;
+CC.addEventListener('mousedown', e => {
+    if (e.target.closest('.holon-box,.add-btn,input,button,.actor-container-header,.resize-handle,.palette-item')) return;
+    isPanning = true; sx = e.clientX - panX; sy = e.clientY - panY;
+    CC.classList.add('panning');
+});
+document.addEventListener('mousemove', e => { if (!isPanning) return; panX = e.clientX - sx; panY = e.clientY - sy; updateT(); });
+document.addEventListener('mouseup', () => { isPanning = false; CC.classList.remove('panning'); });
 
-            switch(type) {
-                case 'self_luc': return `${J} modellerer sin egen umiddelbare selvopfattelse.`;
-                case 'self_ideel': return `${J} modellerer sit eget idéelle selvbillede.`;
+document.getElementById('operatorNameInput').addEventListener('input', e => { operatorName = e.target.value || 'O'; render(); });
+document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '+' || e.key === '=') zoom(0.1);
+    else if (e.key === '-') zoom(-0.1);
+    else if (e.key === '0') { scale = 1; panX = 40; panY = 40; updateT(); }
+    else if (e.key === 'Escape') closePanel();
+});
 
-                case 'actor_container': return `${J}s model af ${A}s samlede livsverden.`;
-                case 'actor_luc': return `${J}s overordnede lucidianske model af ${A} som person.`;
-                case 'actor_ideel': return `${J} modellerer sit idéaliserede billede af ${A}.`;
-                case 'actor_skygge': return `${J} modellerer det, som er sandt om ${A}, men som ${A} undertrykker.`;
+// ═══════════════════════════════════════
+// DRAG FROM PALETTE
+// ═══════════════════════════════════════
+(function() {
+    const pal = document.getElementById('paletteHolon');
+    let ghost = null, dragging = false, hovered = null;
 
-                case 'nested_self_luc': return `${J} forestiller sig, hvordan ${A} ser på sig selv.`;
-                case 'nested_primary_luc': return `${J} forestiller sig, hvordan ${A} ser på ${J}.`;
+    pal.addEventListener('mousedown', e => {
+        e.preventDefault(); e.stopPropagation(); dragging = true;
+        ghost = document.createElement('div');
+        ghost.className = 'drag-ghost';
+        ghost.innerHTML = '<span style="font-size:10px;font-weight:800;color:#6366f1;">Tom Holon</span><span style="font-size:7px;color:#94a3b8;">Slip i felt</span>';
+        document.body.appendChild(ghost);
+        ghost.style.left = (e.clientX - 65) + 'px'; ghost.style.top = (e.clientY - 27) + 'px';
+    });
 
-                case 'nested_self_ideel': return `${J} forestiller sig ${A}s idealiserede selvbillede.`;
-                case 'nested_primary_ideel': return `${J} forestiller sig ${A}s idealiserede billede af ${J}.`;
-                case 'nested_skygge': return `${J} forestiller sig det, ${A} undertrykker om sig selv.`;
-
-                case 'subactor_luc': return `${J} forestiller sig, hvordan ${A} ser på ${S}.`;
-                case 'subactor_ideel': return `${J} forestiller sig ${A}s idealiserede billede af ${S}.`;
-
-                case 'subactor_nested_self': return `${J} forestiller sig, hvordan ${A} tror ${S} ser på sig selv.`;
-                case 'subactor_nested_actor': return `${J} forestiller sig, hvordan ${A} tror ${S} ser på ${A}.`;
-                case 'subactor_nested_primary': return `${J} forestiller sig, hvordan ${A} tror ${S} ser på ${J}.`;
-
-                default: return '';
-            }
-        }
-
-        // ===== RENDERING =====
-        function renderCanvas() {
-            const J = getInitial(primaryName);
-
-            let html = `
-                <!-- MOF Section -->
-                <div class="main-section">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <svg class="icon-sm text-amber fill-amber" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                            </svg>
-                            Mentalt Operativt Felt (MOF)
-                        </h2>
-                    </div>
-
-                    <div class="self-model-section">
-                        <!-- Self model -->
-                        <div class="self-model-box">
-                            <div style="font-size: 9px; font-weight: 700; color: #6366f1; margin-bottom: 0.5rem; text-transform: uppercase;">
-                                ${primaryName}s selvmodel
-                            </div>
-                            ${renderHolon('self_luc', null, null)}
-                        </div>
-
-                        <!-- Actor models -->
-                        <div class="actor-models-container">
-                            ${actors.map(actor => renderActorModel(actor)).join('')}
-
-                            <!-- Add Actor Button -->
-                            <button class="add-btn" onclick="addActor()">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 5v14M5 12h14"/>
-                                </svg>
-                                Tilføj Aktør
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Threshold -->
-                <div class="threshold">
-                    <span class="threshold-label">Tærskel</span>
-                </div>
-
-                <!-- LOF Section -->
-                <div class="main-section">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <svg class="icon-sm text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
-                                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
-                                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
-                                <path d="m2 2 20 20"/>
-                            </svg>
-                            Latent Operativt Felt (LOF)
-                        </h2>
-                    </div>
-
-                    <div class="lof-grid">
-                        ${renderHolon('self_ideel', null, null)}
-                        ${actors.map(actor => renderHolon('actor_ideel', actor.name, null, actor.id)).join('')}
-                    </div>
-                </div>
-            `;
-
-            canvas.innerHTML = html;
-            footer.textContent = `Epistemisk Kohærens via Lucidiansk Simulation · ${primaryName.toUpperCase()}`;
-        }
-
-        function renderActorModel(actor) {
-            const notation = formatNotation('actor_container', actor.name);
-
-            return `
-                <div class="actor-model" data-actor-id="${actor.id}">
-                    <div class="actor-header">
-                        <input type="text"
-                            class="actor-name-input"
-                            value="${actor.name}"
-                            onchange="updateActorName('${actor.id}', this.value)"
-                            placeholder="Aktørnavn">
-                        <span class="actor-notation">${notation}</span>
-                        <button class="actor-delete-btn" onclick="deleteActor('${actor.id}')">Slet</button>
-                    </div>
-
-                    <!-- Jacob's direct model of the actor -->
-                    <div class="actor-direct-model">
-                        <div class="nested-section-label" style="color: #4f46e5;">
-                            <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 16v-4"/>
-                                <path d="M12 8h.01"/>
-                            </svg>
-                            ${primaryName}s direkte model af ${actor.name}
-                        </div>
-                        ${renderHolon('actor_luc', actor.name, null, actor.id)}
-                    </div>
-
-                    <!-- Nested MOF -->
-                    <div class="nested-section">
-                        <div class="nested-section-label">
-                            <svg class="icon-xs text-amber fill-amber" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                            </svg>
-                            MOF (${actor.name}s lucidianske felt)
-                        </div>
-                        <div class="nested-grid">
-                            ${renderHolon('nested_primary_luc', actor.name, null, actor.id)}
-                            ${renderHolon('nested_self_luc', actor.name, null, actor.id)}
-                        </div>
-
-                        <!-- Sub-actors in MOF -->
-                        ${actor.subActors.map(sub => renderSubActorHolons(actor, sub, 'mof')).join('')}
-                    </div>
-
-                    <!-- Nested Threshold -->
-                    <div class="nested-threshold">
-                        <span class="nested-threshold-label">Tærskel</span>
-                    </div>
-
-                    <!-- Nested LOF -->
-                    <div class="nested-section">
-                        <div class="nested-section-label">
-                            <svg class="icon-xs text-indigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
-                                <path d="m2 2 20 20"/>
-                            </svg>
-                            LOF (${actor.name}s latente felt)
-                        </div>
-                        <div class="nested-grid nested-grid-3">
-                            ${renderHolon('nested_primary_ideel', actor.name, null, actor.id)}
-                            ${renderHolon('nested_self_ideel', actor.name, null, actor.id)}
-                            ${renderHolon('nested_skygge', actor.name, null, actor.id, true)}
-                        </div>
-
-                        <!-- Sub-actors in LOF -->
-                        ${actor.subActors.map(sub => renderSubActorHolons(actor, sub, 'lof')).join('')}
-                    </div>
-
-                    <!-- Sub-actors section -->
-                    <div class="sub-actors-section">
-                        <div class="nested-section-label">
-                            <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                            Undermodeller i ${actor.name}s felt
-                        </div>
-
-                        ${actor.subActors.map(sub => renderSubActorCard(actor, sub)).join('')}
-
-                        <button class="add-btn add-btn-small" onclick="addSubActor('${actor.id}')" style="margin-top: 0.5rem;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 5v14M5 12h14"/>
-                            </svg>
-                            Tilføj Undermodel
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSubActorCard(actor, subActor) {
-            return `
-                <div class="sub-actor">
-                    <div class="sub-actor-header">
-                        <input type="text"
-                            class="sub-actor-name-input"
-                            value="${subActor.name}"
-                            onchange="updateSubActorName('${actor.id}', '${subActor.id}', this.value)"
-                            placeholder="Navn">
-                        <span style="font-size: 9px; color: #6366f1; font-weight: 600;">
-                            ${formatNotation('subactor_luc', actor.name, subActor.name)}
-                        </span>
-                        <button class="actor-delete-btn" onclick="deleteSubActor('${actor.id}', '${subActor.id}')">×</button>
-                    </div>
-                    <div style="font-size: 9px; color: #64748b; font-style: italic;">
-                        ${getDescription('subactor_luc', actor.name, subActor.name)}
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderSubActorHolons(actor, subActor, section) {
-            if (section === 'mof') {
-                return `
-                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e8f0;">
-                        <div style="font-size: 8px; color: #94a3b8; margin-bottom: 0.375rem; font-weight: 700;">
-                            ${actor.name}s model af ${subActor.name}:
-                        </div>
-                        <div class="nested-grid">
-                            ${renderHolon('subactor_luc', actor.name, subActor.name, actor.id + '_' + subActor.id)}
-                        </div>
-                    </div>
-                `;
-            } else {
-                return `
-                    <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e8f0;">
-                        <div style="font-size: 8px; color: #94a3b8; margin-bottom: 0.375rem; font-weight: 700;">
-                            ${actor.name}s idealiserede model af ${subActor.name}:
-                        </div>
-                        <div class="nested-grid">
-                            ${renderHolon('subactor_ideel', actor.name, subActor.name, actor.id + '_' + subActor.id)}
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        function renderHolon(type, actorName, subActorName, id = null, isShadow = false) {
-            const key = `${type}_${id || 'self'}`;
-            const notation = formatNotation(type, actorName, subActorName);
-            const description = getDescription(type, actorName, subActorName);
-            const notes = holonNotes[key] || '';
-            const noteLines = notes.split('\n').filter(l => l.trim());
-            const isActive = activeHolonKey === key;
-
-            return `
-                <div class="holon-box ${isShadow ? 'shadow-type' : ''} ${isActive ? 'active' : ''}"
-                    onclick="openHolon('${key}', '${notation}', \`${description.replace(/`/g, "'")}\`)">
-                    <div class="holon-header">
-                        <span class="holon-notation">${notation}</span>
-                        ${isShadow ? '<span class="shadow-badge">Skygge</span>' : '<div class="holon-status"></div>'}
-                    </div>
-                    <div class="holon-description">${description}</div>
-                    ${noteLines.length > 0 ? `
-                        <div class="holon-notes-preview">
-                            <ul>
-                                ${noteLines.map(l => `<li>${l.replace(/^[-•]\s*/, '')}</li>`).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
-
-        // ===== ACTOR MANAGEMENT =====
-        function addActor() {
-            const id = 'actor_' + Date.now();
-            const existingNames = actors.map(a => a.name);
-            let newName = 'Ny Aktør';
-            let counter = 1;
-            while (existingNames.includes(newName)) {
-                newName = `Ny Aktør ${++counter}`;
-            }
-            actors.push({ id, name: newName, subActors: [] });
-            renderCanvas();
-        }
-
-        function deleteActor(actorId) {
-            if (actors.length <= 1) {
-                alert('Der skal være mindst én aktør.');
-                return;
-            }
-            actors = actors.filter(a => a.id !== actorId);
-            renderCanvas();
-        }
-
-        function updateActorName(actorId, newName) {
-            const actor = actors.find(a => a.id === actorId);
-            if (actor) {
-                actor.name = newName || 'Unavngivet';
-                renderCanvas();
-            }
-        }
-
-        function addSubActor(actorId) {
-            const actor = actors.find(a => a.id === actorId);
-            if (actor) {
-                const id = 'sub_' + Date.now();
-                actor.subActors.push({ id, name: 'Ny Person' });
-                renderCanvas();
-            }
-        }
-
-        function deleteSubActor(actorId, subActorId) {
-            const actor = actors.find(a => a.id === actorId);
-            if (actor) {
-                actor.subActors = actor.subActors.filter(s => s.id !== subActorId);
-                renderCanvas();
-            }
-        }
-
-        function updateSubActorName(actorId, subActorId, newName) {
-            const actor = actors.find(a => a.id === actorId);
-            if (actor) {
-                const subActor = actor.subActors.find(s => s.id === subActorId);
-                if (subActor) {
-                    subActor.name = newName || 'Unavngivet';
-                    renderCanvas();
-                }
-            }
-        }
-
-        // ===== HOLON PANEL =====
-        function openHolon(key, notation, description) {
-            activeHolonKey = key;
-            detailTitle.textContent = notation;
-            detailDescription.textContent = description;
-            detailTextarea.value = holonNotes[key] || '';
-            detailPanel.classList.add('open');
-            renderCanvas();
-            setTimeout(() => detailTextarea.focus(), 200);
-        }
-
-        function closePanel() {
-            activeHolonKey = null;
-            detailPanel.classList.remove('open');
-            renderCanvas();
-        }
-
-        // ===== ZOOM & PAN =====
-        function updateCanvasTransform() {
-            canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-            zoomLevelDisplay.textContent = `${Math.round(scale * 100)}%`;
-        }
-
-        function zoom(delta, cx, cy) {
-            const oldScale = scale;
-            scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, scale + delta));
-            if (cx !== undefined) {
-                const rect = canvasContainer.getBoundingClientRect();
-                const mx = cx - rect.left;
-                const my = cy - rect.top;
-                panX = mx - (mx - panX) * (scale / oldScale);
-                panY = my - (my - panY) * (scale / oldScale);
-            }
-            updateCanvasTransform();
-        }
-
-        function resetView() {
-            scale = 1;
-            panX = 40;
-            panY = 40;
-            updateCanvasTransform();
-        }
-
-        // ===== EVENT LISTENERS =====
-        primaryNameInput.addEventListener('input', (e) => {
-            primaryName = e.target.value || 'Jacob';
-            renderCanvas();
-        });
-
-        closeBtn.addEventListener('click', closePanel);
-
-        detailTextarea.addEventListener('input', (e) => {
-            if (activeHolonKey) {
-                holonNotes[activeHolonKey] = e.target.value;
+    document.addEventListener('mousemove', e => {
+        if (!dragging || !ghost) return;
+        ghost.style.left = (e.clientX - 65) + 'px'; ghost.style.top = (e.clientY - 27) + 'px';
+        // Find deepest drop zone under cursor
+        let best = null;
+        document.querySelectorAll('.drop-zone').forEach(z => {
+            const r = z.getBoundingClientRect();
+            if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+                if (!best || best.contains(z)) best = z;
             }
         });
+        if (hovered && hovered !== best) hovered.classList.remove('drop-hover');
+        if (best) best.classList.add('drop-hover');
+        hovered = best;
+    });
 
-        zoomInBtn.addEventListener('click', () => zoom(SCALE_STEP));
-        zoomOutBtn.addEventListener('click', () => zoom(-SCALE_STEP));
-        zoomResetBtn.addEventListener('click', resetView);
+    document.addEventListener('mouseup', () => {
+        if (!dragging) return; dragging = false;
+        if (ghost) { ghost.remove(); ghost = null; }
+        if (hovered) {
+            hovered.classList.remove('drop-hover');
+            const z = hovered.dataset.zone;
+            if (z) addCH(z);
+            hovered = null;
+        }
+    });
+})();
 
-        canvasContainer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            zoom(e.deltaY < 0 ? SCALE_STEP : -SCALE_STEP, e.clientX, e.clientY);
-        }, { passive: false });
-
-        canvasContainer.addEventListener('mousedown', (e) => {
-            if (e.target.closest('.holon-box') || e.target.closest('.add-btn') ||
-                e.target.closest('input') || e.target.closest('button')) return;
-            isPanning = true;
-            startX = e.clientX - panX;
-            startY = e.clientY - panY;
-            canvasContainer.classList.add('panning');
+// ═══════════════════════════════════════
+// RESIZE
+// ═══════════════════════════════════════
+function attachResize() {
+    document.querySelectorAll('.holon-box, .actor-container').forEach(el => {
+        if (el.querySelector('.resize-handle')) return;
+        const key = el.dataset.hkey || ('r' + Math.random().toString(36).substr(2,5));
+        ['se','e','s'].forEach(dir => {
+            const h = document.createElement('div');
+            h.className = 'resize-handle resize-handle-' + dir;
+            h.dataset.dir = dir;
+            el.appendChild(h);
         });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isPanning) return;
-            panX = e.clientX - startX;
-            panY = e.clientY - startY;
-            updateCanvasTransform();
+        el.addEventListener('mousedown', e => {
+            const h = e.target.closest('.resize-handle');
+            if (!h) return;
+            e.preventDefault(); e.stopPropagation();
+            const x0 = e.clientX, y0 = e.clientY, w0 = el.offsetWidth, h0 = el.offsetHeight;
+            function mv(e2) {
+                const dx = (e2.clientX - x0) / scale, dy = (e2.clientY - y0) / scale;
+                let nw = w0, nh = h0;
+                if (h.dataset.dir.includes('e')) nw = Math.max(100, w0 + dx);
+                if (h.dataset.dir.includes('s')) nh = Math.max(50, h0 + dy);
+                el.style.width = nw + 'px'; el.style.height = nh + 'px'; el.style.flex = 'none';
+                holonSizes[key] = { w: nw, h: nh };
+            }
+            function up() { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); }
+            document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
         });
+    });
+}
 
-        document.addEventListener('mouseup', () => {
-            isPanning = false;
-            canvasContainer.classList.remove('panning');
+// ═══════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════
+function openExport() {
+    const t = genExport();
+    const n = Object.keys(holonNotes).filter(k => holonNotes[k].trim()).length;
+    document.getElementById('exportStats').textContent = n + ' holon(er) med indhold';
+    document.getElementById('exportTextarea').value = t;
+    openModal('exportModal');
+}
+function copyExport() {
+    document.getElementById('exportTextarea').select();
+    document.execCommand('copy');
+    document.getElementById('copyBtn').classList.add('copied');
+    document.getElementById('copyBtnText').textContent = 'Kopieret!';
+    setTimeout(() => { document.getElementById('copyBtn').classList.remove('copied'); document.getElementById('copyBtnText').textContent = 'Kopier'; }, 2000);
+}
+function genExport() {
+    const lines = ['='.repeat(60), 'SMFI ANALYSE - ' + operatorName.toUpperCase(), '='.repeat(60), '', 'Operator: ' + operatorName, ''];
+    function ex(nesting, fa, depth) {
+        const owner = nesting.length > 0 ? nesting[nesting.length - 1] : operatorName;
+        const ind = '  '.repeat(depth);
+        exH(nesting, owner, '_Luc.mod.', ind);
+        if (nesting.length > 0 && owner !== operatorName) exH(nesting, operatorName, '', ind);
+        fa.forEach(a => {
+            lines.push(ind + '--- ' + N(nesting, a.name, '_bevidst') + ' ---');
+            ex([...nesting, a.name], a.children, depth + 1);
         });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            if (e.key === '+' || e.key === '=') zoom(SCALE_STEP);
-            else if (e.key === '-') zoom(-SCALE_STEP);
-            else if (e.key === '0') resetView();
-            else if (e.key === 'Escape') closePanel();
-        });
-
-        // ===== EXPORT FUNCTIONS =====
-        function openExportModal() {
-            const exportText = generateExportText();
-            const filledCount = Object.keys(holonNotes).filter(k => holonNotes[k].trim()).length;
-
-            document.getElementById('exportStats').textContent =
-                `${filledCount} holon${filledCount !== 1 ? 'er' : ''} med indhold eksporteret`;
-            document.getElementById('exportTextarea').value = exportText;
-            document.getElementById('exportModal').classList.add('open');
-            document.getElementById('copyBtn').classList.remove('copied');
-            document.getElementById('copyBtnText').textContent = 'Kopiér til udklipsholder';
-        }
-
-        function closeExportModal() {
-            document.getElementById('exportModal').classList.remove('open');
-        }
-
-        function copyExportText() {
-            const textarea = document.getElementById('exportTextarea');
-            textarea.select();
-            document.execCommand('copy');
-
-            const btn = document.getElementById('copyBtn');
-            const btnText = document.getElementById('copyBtnText');
-            btn.classList.add('copied');
-            btnText.textContent = 'Kopieret!';
-
-            setTimeout(() => {
-                btn.classList.remove('copied');
-                btnText.textContent = 'Kopiér til udklipsholder';
-            }, 2000);
-        }
-
-        function generateExportText() {
-            const J = primaryName;
-            let lines = [];
-
-            lines.push('═══════════════════════════════════════════════════════════════');
-            lines.push(`SMFI NESTED ACTOR ANALYSE - ${J.toUpperCase()}S LIVSVERDEN`);
-            lines.push('═══════════════════════════════════════════════════════════════');
-            lines.push('');
-            lines.push('Denne analyse er genereret fra SMFI Visual Mapper v. 3.0');
-            lines.push(`Primær operatør: ${J}`);
-            lines.push(`Aktører: ${actors.map(a => a.name).join(', ')}`);
-            lines.push('');
-            lines.push('Formål: Identificér konflikter og inkonsistenser mellem holonerne.');
-            lines.push('');
-            lines.push('───────────────────────────────────────────────────────────────');
-            lines.push('AKTØRER OG UNDERMODELLER:');
-            lines.push('───────────────────────────────────────────────────────────────');
-            lines.push('');
-
-            // List all actors and their sub-actors
-            actors.forEach(actor => {
-                const initial = actor.name.charAt(0).toUpperCase();
-                lines.push(`Aktør: ${actor.name} (${initial})`);
-                if (actor.subActors && actor.subActors.length > 0) {
-                    actor.subActors.forEach(sub => {
-                        const subInitial = sub.name.charAt(0).toUpperCase();
-                        lines.push(`  - Undermodel: ${sub.name} (${subInitial})`);
-                    });
-                }
-                lines.push('');
-            });
-
-            lines.push('───────────────────────────────────────────────────────────────');
-            lines.push('HOLONER MED INDHOLD:');
-            lines.push('───────────────────────────────────────────────────────────────');
-            lines.push('');
-
-            // Self model (MOF)
-            addHolonToExport(lines, 'self_luc', 'self', null, null);
-
-            // Actors and their nested models
-            actors.forEach(actor => {
-                // Actor's direct lucidian model
-                addHolonToExport(lines, 'actor_luc', actor.id, actor.name, null);
-
-                // Nested MOF models
-                addHolonToExport(lines, 'nested_primary_luc', actor.id, actor.name, null);
-                addHolonToExport(lines, 'nested_self_luc', actor.id, actor.name, null);
-
-                // Sub-actors in MOF
-                actor.subActors.forEach(sub => {
-                    addHolonToExport(lines, 'subactor_luc', actor.id + '_' + sub.id, actor.name, sub.name);
-                });
-
-                // Nested LOF models
-                addHolonToExport(lines, 'nested_primary_ideel', actor.id, actor.name, null);
-                addHolonToExport(lines, 'nested_self_ideel', actor.id, actor.name, null);
-                addHolonToExport(lines, 'nested_skygge', actor.id, actor.name, null);
-
-                // Sub-actors in LOF
-                actor.subActors.forEach(sub => {
-                    addHolonToExport(lines, 'subactor_ideel', actor.id + '_' + sub.id, actor.name, sub.name);
-                });
-            });
-
-            // Global LOF
-            addHolonToExport(lines, 'self_ideel', 'self', null, null);
-            actors.forEach(actor => {
-                addHolonToExport(lines, 'actor_ideel', actor.id, actor.name, null);
-            });
-
-            lines.push('───────────────────────────────────────────────────────────────');
-            lines.push('ANALYSE-INSTRUKTIONER TIL LLM:');
-            lines.push('───────────────────────────────────────────────────────────────');
-            lines.push('');
-            lines.push('1. Identificér potentielle konflikter mellem holonerne.');
-            lines.push('2. Bemærk, hvor operatørens opfattelse af sig selv afviger fra');
-            lines.push('   hvordan operatøren tror andre ser på dem.');
-            lines.push('3. Find skygge-aspekter der kan være i konflikt med idealbilleder.');
-            lines.push('4. Vurdér epistemisk kohærens på tværs af modellerne.');
-            lines.push('5. Giv konkrete forslag til at løse identificerede konflikter.');
-            lines.push('');
-            lines.push('═══════════════════════════════════════════════════════════════');
-
-            return lines.join('\n');
-        }
-
-        function addHolonToExport(lines, type, id, actorName, subActorName) {
-            const key = `${type}_${id}`;
-            const notes = holonNotes[key];
-
-            if (!notes || !notes.trim()) return;
-
-            const notation = formatNotation(type, actorName, subActorName);
-            const description = getDescription(type, actorName, subActorName);
-
-            // Build metadata line with full names
-            let metadata = `Primær: ${primaryName}`;
-            if (actorName) {
-                metadata += `, Aktør: ${actorName}`;
-            }
-            if (subActorName) {
-                metadata += `, Under-aktør: ${subActorName}`;
-            }
-
-            lines.push(`▸ ${notation}`);
-            lines.push(`  [${metadata}]`);
-            lines.push(`  Beskrivelse: ${description}`);
-            lines.push('  Indhold:');
-            notes.split('\n').filter(l => l.trim()).forEach(line => {
-                lines.push(`    ${line}`);
-            });
-            lines.push('');
-        }
-
-        // Close modal on backdrop click
-        document.getElementById('exportModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('exportModal')) {
-                closeExportModal();
-            }
-        });
-
-        // Close modal on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('exportModal').classList.contains('open')) {
-                closeExportModal();
-            }
-        });
-
-        // ===== IMPORT FUNCTIONS =====
-        function openImportModal() {
-            document.getElementById('importTextarea').value = '';
-            document.getElementById('overwriteExisting').checked = false;
-            document.getElementById('importStats').textContent =
-                'Indsæt en eksporteret SMFI-analyse herunder. Data vil blive importeret baseret på notation.';
-            document.getElementById('importModal').classList.add('open');
-        }
-
-        function closeImportModal() {
-            document.getElementById('importModal').classList.remove('open');
-        }
-
-        function processImport() {
-            const text = document.getElementById('importTextarea').value;
-            const overwrite = document.getElementById('overwriteExisting').checked;
-
-            if (!text.trim()) {
-                alert('Indsæt venligst noget tekst at importere.');
-                return;
-            }
-
-            // First, discover and create missing actors/sub-actors
-            const discovered = discoverActorsFromImport(text);
-            createMissingActors(discovered);
-
-            // Then import the holon data
-            const result = parseImportText(text, overwrite);
-
-            if (result.imported === 0) {
-                document.getElementById('importStats').textContent =
-                    '⚠️ Ingen matchende holoner fundet. Tjek at formatet er korrekt.';
-                document.getElementById('importStats').style.color = '#dc2626';
-            } else {
-                let message = `✓ ${result.imported} holon${result.imported !== 1 ? 'er' : ''} importeret. ${result.skipped} sprunget over.`;
-                if (discovered.actorsCreated > 0) {
-                    message += ` ${discovered.actorsCreated} aktør${discovered.actorsCreated !== 1 ? 'er' : ''} oprettet.`;
-                }
-                if (discovered.subActorsCreated > 0) {
-                    message += ` ${discovered.subActorsCreated} undermodel${discovered.subActorsCreated !== 1 ? 'ler' : ''} oprettet.`;
-                }
-
-                document.getElementById('importStats').textContent = message;
-                document.getElementById('importStats').style.color = '#10b981';
-
-                renderCanvas();
-
-                setTimeout(() => {
-                    closeImportModal();
-                }, 1500);
-            }
-        }
-
-        function discoverActorsFromImport(text) {
-            const lines = text.split('\n');
-            const actorsNeeded = new Map(); // Map of actor initial -> full name
-            const subActorsNeeded = new Map(); // Map of actor initial -> Map of sub-actor initial -> full name
-
-            let inActorsSection = false;
-            let currentActorInitial = null;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-
-                // Check if we're entering the actors section
-                if (line.includes('AKTØRER OG UNDERMODELLER:')) {
-                    inActorsSection = true;
-                    continue;
-                }
-
-                // Check if we're leaving the actors section
-                if (inActorsSection && line.includes('HOLONER MED INDHOLD:')) {
-                    inActorsSection = false;
-                    continue;
-                }
-
-                // Parse actors section
-                if (inActorsSection) {
-                    // Parse actor line: "Aktør: Børge (B)"
-                    const actorMatch = line.match(/^Aktør:\s+(.+?)\s+\((\w)\)$/);
-                    if (actorMatch) {
-                        const actorName = actorMatch[1].trim();
-                        const actorInitial = actorMatch[2];
-                        actorsNeeded.set(actorInitial, actorName);
-                        currentActorInitial = actorInitial;
-
-                        if (!subActorsNeeded.has(actorInitial)) {
-                            subActorsNeeded.set(actorInitial, new Map());
-                        }
-                        continue;
-                    }
-
-                    // Parse sub-actor line: "  - Undermodel: Peter (P)"
-                    const subActorMatch = line.match(/^\s+-\s+Undermodel:\s+(.+?)\s+\((\w)\)$/);
-                    if (subActorMatch && currentActorInitial) {
-                        const subActorName = subActorMatch[1].trim();
-                        const subActorInitial = subActorMatch[2];
-
-                        if (!subActorsNeeded.has(currentActorInitial)) {
-                            subActorsNeeded.set(currentActorInitial, new Map());
-                        }
-                        subActorsNeeded.get(currentActorInitial).set(subActorInitial, subActorName);
-                        continue;
-                    }
-                }
-
-                // Fallback: Also scan holons for actors not in the actors section (backwards compatibility)
-                if (line.trim().startsWith('▸ ')) {
-                    const notation = line.trim().substring(2).trim();
-                    const parsed = parseNotation(notation);
-
-                    // Check next line for metadata
-                    let actorFullName = null;
-                    let subActorFullName = null;
-
-                    if (i + 1 < lines.length && lines[i + 1].trim().match(/^\[.*\]$/)) {
-                        const metadata = lines[i + 1].trim().slice(1, -1);
-                        const metaParsed = parseMetadata(metadata);
-                        actorFullName = metaParsed.actor;
-                        subActorFullName = metaParsed.subActor;
-                    }
-
-                    if (parsed && parsed.actorName) {
-                        if (!actorsNeeded.has(parsed.actorName)) {
-                            actorsNeeded.set(parsed.actorName, actorFullName || parsed.actorName);
-                        }
-
-                        if (parsed.subActorName) {
-                            if (!subActorsNeeded.has(parsed.actorName)) {
-                                subActorsNeeded.set(parsed.actorName, new Map());
-                            }
-                            if (!subActorsNeeded.get(parsed.actorName).has(parsed.subActorName)) {
-                                subActorsNeeded.get(parsed.actorName).set(
-                                    parsed.subActorName,
-                                    subActorFullName || parsed.subActorName
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-
-            return { actorsNeeded, subActorsNeeded, actorsCreated: 0, subActorsCreated: 0 };
-        }
-
-        function parseMetadata(metadata) {
-            // Parse: "Primær: Jacob, Aktør: Line, Under-aktør: Maria"
-            const result = { primary: null, actor: null, subActor: null };
-
-            const parts = metadata.split(',').map(p => p.trim());
-            for (const part of parts) {
-                if (part.startsWith('Primær:')) {
-                    result.primary = part.substring('Primær:'.length).trim();
-                } else if (part.startsWith('Aktør:')) {
-                    result.actor = part.substring('Aktør:'.length).trim();
-                } else if (part.startsWith('Under-aktør:')) {
-                    result.subActor = part.substring('Under-aktør:'.length).trim();
-                }
-            }
-
-            return result;
-        }
-
-        function createMissingActors(discovered) {
-            let actorsCreated = 0;
-            let subActorsCreated = 0;
-
-            // Create missing main actors
-            for (const [actorInitial, actorFullName] of discovered.actorsNeeded.entries()) {
-                const exists = actors.find(a =>
-                    a.name.charAt(0).toUpperCase() === actorInitial ||
-                    a.name === actorFullName
-                );
-
-                if (!exists) {
-                    const id = 'actor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    const name = actorFullName; // Use full name from metadata
-                    actors.push({ id, name, subActors: [] });
-                    actorsCreated++;
-                }
-            }
-
-            // Create missing sub-actors
-            for (const [actorInitial, subActorMap] of discovered.subActorsNeeded.entries()) {
-                const actor = actors.find(a => a.name.charAt(0).toUpperCase() === actorInitial);
-
-                if (actor) {
-                    for (const [subInitial, subFullName] of subActorMap.entries()) {
-                        const subExists = actor.subActors.find(s =>
-                            s.name.charAt(0).toUpperCase() === subInitial ||
-                            s.name === subFullName
-                        );
-
-                        if (!subExists) {
-                            const id = 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                            const name = subFullName; // Use full name from metadata
-                            actor.subActors.push({ id, name });
-                            subActorsCreated++;
-                        }
-                    }
-                }
-            }
-
-            discovered.actorsCreated = actorsCreated;
-            discovered.subActorsCreated = subActorsCreated;
-        }
-
-        function parseImportText(text, overwrite) {
-            const lines = text.split('\n');
-            let imported = 0;
-            let skipped = 0;
-            let currentNotation = null;
-            let currentMetadata = null;
-            let currentContent = [];
-            let inContentSection = false;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-
-                // Detect new holon entry
-                if (line.trim().startsWith('▸ ')) {
-                    // Save previous holon if exists
-                    if (currentNotation && currentContent.length > 0) {
-                        const saved = saveImportedHolon(currentNotation, currentMetadata, currentContent.join('\n'), overwrite);
-                        if (saved) imported++;
-                        else skipped++;
-                    }
-
-                    // Start new holon
-                    currentNotation = line.trim().substring(2).trim();
-                    currentMetadata = null;
-                    currentContent = [];
-                    inContentSection = false;
-                }
-                // Detect metadata line [Primær: Jacob, Aktør: Line]
-                else if (line.trim().match(/^\[.*\]$/)) {
-                    currentMetadata = line.trim().slice(1, -1); // Remove brackets
-                }
-                // Detect content section
-                else if (line.trim() === 'Indhold:') {
-                    inContentSection = true;
-                }
-                // Collect content lines (indented)
-                else if (inContentSection && line.startsWith('    ')) {
-                    currentContent.push(line.substring(4));
-                }
-                // End of content section if we hit a non-indented line
-                else if (inContentSection && line.trim() && !line.startsWith('  ')) {
-                    inContentSection = false;
-                }
-            }
-
-            // Save last holon
-            if (currentNotation && currentContent.length > 0) {
-                const saved = saveImportedHolon(currentNotation, currentMetadata, currentContent.join('\n'), overwrite);
-                if (saved) imported++;
-                else skipped++;
-            }
-
-            return { imported, skipped };
-        }
-
-        function saveImportedHolon(notation, metadata, content, overwrite) {
-            // Try to match notation to existing holons
-            const matchedKey = findHolonKeyByNotation(notation);
-
-            if (!matchedKey) {
-                return false; // No match found
-            }
-
-            // Check if overwrite is allowed
-            if (!overwrite && holonNotes[matchedKey] && holonNotes[matchedKey].trim()) {
-                return false; // Skip if already has content and overwrite is false
-            }
-
-            // Save the content
-            holonNotes[matchedKey] = content;
-            return true;
-        }
-
-        function findHolonKeyByNotation(notation) {
-            // Parse notation to understand structure
-            const parsed = parseNotation(notation);
-            if (!parsed) return null;
-
-            // Try to find matching holon in current state
-            // First, try self holons
-            if (parsed.type === 'self_luc' || parsed.type === 'self_ideel') {
-                return `${parsed.type}_self`;
-            }
-
-            // Try actor holons
-            if (parsed.actorName && !parsed.subActorName) {
-                const actor = actors.find(a =>
-                    a.name.charAt(0).toUpperCase() === parsed.actorName ||
-                    a.name.toLowerCase() === parsed.actorNameFull?.toLowerCase()
-                );
-
-                if (actor) {
-                    return `${parsed.type}_${actor.id}`;
-                }
-            }
-
-            // Try sub-actor holons
-            if (parsed.actorName && parsed.subActorName) {
-                const actor = actors.find(a =>
-                    a.name.charAt(0).toUpperCase() === parsed.actorName ||
-                    a.name.toLowerCase() === parsed.actorNameFull?.toLowerCase()
-                );
-
-                if (actor) {
-                    const subActor = actor.subActors.find(s =>
-                        s.name.charAt(0).toUpperCase() === parsed.subActorName ||
-                        s.name.toLowerCase() === parsed.subActorNameFull?.toLowerCase()
-                    );
-
-                    if (subActor) {
-                        return `${parsed.type}_${actor.id}_${subActor.id}`;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        function parseNotation(notation) {
-            // Examples:
-            // J(J)_Luc.mod. → self_luc
-            // J(J)_idél → self_ideel
-            // J(L)_Luc.mod. → actor_luc with actorName="L"
-            // J(L)_idél → actor_ideel
-            // J(L)_Skygge → actor_skygge
-            // J(L(L))_Luc.mod. → nested_self_luc
-            // J(L(J))_Luc.mod. → nested_primary_luc
-            // J(L(L))_idél → nested_self_ideel
-            // J(L(J))_idél → nested_primary_ideel
-            // J(L)_Skygge → nested_skygge
-            // J(L(S))_Luc.mod. → subactor_luc
-            // J(L(S))_idél → subactor_ideel
-
-            const match = notation.match(/^(\w)\((.+?)\)_(.+)$/);
-            if (!match) return null;
-
-            const primaryInitial = match[1];
-            const innerPart = match[2];
-            const suffix = match[3];
-
-            let type = null;
-            let actorName = null;
-            let subActorName = null;
-
-            // Determine type from suffix
-            if (suffix === 'Luc.mod.') {
-                // Check if self or actor model
-                if (innerPart === primaryInitial) {
-                    type = 'self_luc';
-                } else if (innerPart.includes('(')) {
-                    // Nested model
-                    const nestedMatch = innerPart.match(/^(\w)\((\w)\)$/);
-                    if (nestedMatch) {
-                        actorName = nestedMatch[1];
-                        const innerInitial = nestedMatch[2];
-
-                        if (innerInitial === actorName) {
-                            type = 'nested_self_luc';
-                        } else if (innerInitial === primaryInitial) {
-                            type = 'nested_primary_luc';
-                        } else {
-                            type = 'subactor_luc';
-                            subActorName = innerInitial;
-                        }
-                    }
-                } else {
-                    type = 'actor_luc';
-                    actorName = innerPart;
-                }
-            } else if (suffix === 'idél') {
-                if (innerPart === primaryInitial) {
-                    type = 'self_ideel';
-                } else if (innerPart.includes('(')) {
-                    const nestedMatch = innerPart.match(/^(\w)\((\w)\)$/);
-                    if (nestedMatch) {
-                        actorName = nestedMatch[1];
-                        const innerInitial = nestedMatch[2];
-
-                        if (innerInitial === actorName) {
-                            type = 'nested_self_ideel';
-                        } else if (innerInitial === primaryInitial) {
-                            type = 'nested_primary_ideel';
-                        } else {
-                            type = 'subactor_ideel';
-                            subActorName = innerInitial;
-                        }
-                    }
-                } else {
-                    type = 'actor_ideel';
-                    actorName = innerPart;
-                }
-            } else if (suffix === 'Skygge') {
-                if (innerPart.includes('(')) {
-                    const nestedMatch = innerPart.match(/^(\w)\((\w)\)$/);
-                    if (nestedMatch) {
-                        actorName = nestedMatch[1];
-                        type = 'nested_skygge';
-                    }
-                } else {
-                    type = 'actor_skygge';
-                    actorName = innerPart;
-                }
-            }
-
-            return { type, actorName, subActorName, primaryInitial };
-        }
-
-        // Close import modal on backdrop click
-        document.getElementById('importModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('importModal')) {
-                closeImportModal();
-            }
-        });
-
-        // Close import modal on Escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('importModal').classList.contains('open')) {
-                closeImportModal();
-            }
-        });
-
-        // ===== INIT =====
-        renderCanvas();
-        updateCanvasTransform();
-    </script>
+        lines.push(ind + '--- LOF ---');
+        exH(nesting, owner, '_ideel', ind); exH(nesting, owner, '_faktisk', ind);
+        if (nesting.length > 0 && owner !== operatorName) { exH(nesting, operatorName, '_ideel', ind); exH(nesting, operatorName, '_faktisk', ind); }
+        fa.forEach(a => { exH(nesting, a.name, '_ideel', ind); exH(nesting, a.name, '_faktisk', ind); });
+    }
+    function exH(nesting, target, suffix, ind) {
+        const key = K(nesting, target, suffix), notes = holonNotes[key];
+        const tags = holonTags[key];
+        if ((!notes || !notes.trim()) && (!tags || tags.length === 0)) return;
+        const tagStr = (tags && tags.length > 0) ? ' [' + tags.join(', ') + ']' : '';
+        lines.push(ind + '> ' + N(nesting, target, suffix) + tagStr);
+        if (notes) notes.split('\n').filter(l => l.trim()).forEach(l => lines.push(ind + '  ' + l));
+        lines.push('');
+    }
+    ex([], actors, 0);
+    lines.push('='.repeat(60));
+    return lines.join('\n');
+}
+function processImport() {
+    const text = document.getElementById('importTextarea').value;
+    if (!text.trim()) return;
+    alert('Import er endnu ikke implementeret i v4. Brug eksport/kopier.');
+    closeModal('importModal');
+}
+
+// Modal helpers
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => { m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+render();
+updateT();
+</script>
 </body>
 </html>
