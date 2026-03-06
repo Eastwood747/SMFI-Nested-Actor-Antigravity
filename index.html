@@ -1243,9 +1243,11 @@ const PM_DIM_ENDS = {
 };
 
 function pmDefaultProfile() {
-  const rest = {}, stress = {};
-  PM_DIM_KEYS.forEach(k => { rest[k] = 5; stress[k] = 5; });
-  return { rest, stress };
+    const profile = {};
+    PM_DIM_KEYS.forEach(k => {
+        profile[k] = { rest: 5, stress: 5 };
+    });
+    return profile;
 }
 
 function pmEnsure(name) {
@@ -1276,10 +1278,16 @@ function closePersonality() {
 
 function pmUpdateFromState() {
     PM_DIM_KEYS.forEach(k => {
-        const r = document.getElementById(k+'-rest');
-        const s = document.getElementById(k+'-stress');
-        if (r) { r.value = pmState.rest[k]; r.style.setProperty('--val', pmState.rest[k]*10); }
-        if (s) { s.value = pmState.stress[k]; s.style.setProperty('--val', pmState.stress[k]*10); }
+        const r = document.getElementById(k + '-rest');
+        const s = document.getElementById(k + '-stress');
+        if (r && pmState[k]) {
+            r.value = pmState[k].rest;
+            r.style.setProperty('--val', pmState[k].rest * 10);
+        }
+        if (s && pmState[k]) {
+            s.value = pmState[k].stress;
+            s.style.setProperty('--val', pmState[k].stress * 10);
+        }
         pmUpdateReadout(k);
     });
 }
@@ -3156,7 +3164,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') document.que
 // ═══════════════════════════════════════
 // AI CHAT (Gemini)
 // ═══════════════════════════════════════
-const GEMINI_KEY = 'AIzaSyD5Ukfl3tcqeN-8AlTexjNzmAKcSHRU4xw';
+const GEMINI_KEY = 'AIzaSyDKPfIt7lOXtonTtADD5eGH6PppZQxhqGQ';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + GEMINI_KEY;
 
 let chatOpen = false;
