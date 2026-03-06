@@ -1657,13 +1657,14 @@ function pmRenderAll() {
 }
 
 function pmUpgradeToDualRange() {
-  // Turn every single slider into a dual-thumb slider by cloning the input.
-  document.querySelectorAll('input[type=range]').forEach(inp => {
-    const key = inp.id;
-    if (!pmState[key]) return;
+  // Turn every single .pm-range into a dual-thumb slider by cloning the input.
+  document.querySelectorAll('.pm-range').forEach(inp => {
+    const key = inp.dataset.dim;
+    if (!key || !pmState[key]) return;
 
     const row = inp.closest('.pm-slider-row');
     if (!row) return;
+    if (row.classList.contains('dual')) return; // Avoid double-upgrade
     row.classList.add('dual');
 
     // Convert existing input into REST
