@@ -1,0 +1,123 @@
+{
+  "version": "4.0",
+  "operatorName": "Jacob",
+  "actors": [
+    {
+      "id": "a1",
+      "name": "Line",
+      "children": []
+    },
+    {
+      "id": "a_100_1772784516009",
+      "name": "William",
+      "children": []
+    },
+    {
+      "id": "a_101_1772784516010",
+      "name": "Anders",
+      "children": []
+    },
+    {
+      "id": "a_102_1772784516010",
+      "name": "Pia",
+      "children": []
+    }
+  ],
+  "holonNotes": {
+    "J/_bevidst": "Jacob opfatter sig selv som:\n- en legitim voksen med reelle behov\n- en partner, der har forsøgt at hjælpe Line meget\n- en person med behov for ro, regulering og værdighed\n- en der bliver fysisk belastet af den nuværende dynamik\n- en der ikke ønsker at skade nogen, men heller ikke vil udslette sig selv\n- en der kæmper for at blive taget alvorligt som voksen i feltet",
+    "J/_Luc.mod.": "Jacob fremstår i egen model som:\n- refleksiv\n- belastet\n- samvittighedsfuld\n- stærkt orienteret mod fairness og gensidighed\n- kropsligt presset\n- loyal, men tæt på overbelastning\n- optaget af at forstå systemet frem for bare at reagere impulsivt",
+    "L/J/main": "Line ser, ifølge Jacobs model, Jacob som:\n- en vigtig partner, men også en vanskelig partner på William-feltet\n- mere sensitiv over for støj og uro end hun selv finder rimeligt\n- en voksen, der ønsker mere regulering og mere plads\n- en, der risikerer at gøre det svært for William\n- en, der burde være mere rummelig eller mere tilpasningsdygtig",
+    "J/_ideel": "Jacob vil gerne være:\n- kærlig\n- rolig\n- stærk\n- fair\n- legitimt deltagende\n- en god partner med selvrespekt",
+    "J/_Dark_intuition": "Jacob frygter:\n- at blive reduceret til problemet\n- at hans behov ikke tæller\n- at han kun accepteres, hvis han forsvinder som voksen aktør\n- at kroppen allerede har sagt det, han ikke længere kan ignorere\n- at forholdet ikke reelt har plads til ham",
+    "L/L/_ideel": "Jacobs model af Lines idealiserede selvbillede:\n- god mor\n- loyal beskytter\n- ansvarlig voksen\n- en der gør sit bedste i en svær situation\n- en der holder sammen på hjem, barn og konfliktpres\n- en der ikke svigter sit barn for en partners komfort",
+    "L/L/_Dark_intuition": "Jacobs model af Lines mørke intuition om sig selv:\n- måske er hun ikke retfærdig over for Jacob\n- måske holder hun for hårdt fast i kontrol over William-feltet\n- måske lytter hun for lidt til Jacobs belastning\n- måske risikerer hun at miste Jacob\n- måske er hendes måde at beskytte William på også med til at skade parforholdet",
+    "L/_bevidst": "Jacob opfatter Line som:\n- kærlig, men stærkt bundet til William\n- meget beskyttende over for William\n- tilbageholdende med at give Jacob legitim voksenmyndighed i hjemmet\n- præget af samværskonflikten med Anders\n- svær at nå igennem til, når emnet er William, regulering eller grænser\n- tilbøjelig til at se Jacobs belastning som noget, Jacob selv må håndtere",
+    "L/L/_Luc.mod.": "Line fremstår, i Jacobs model, som en aktør organiseret omkring:\n- moderrolle\n- beskyttelse af William\n- kontrol over hjemmets normer\n- modstand mod, at Jacob får ligeværdig reguleringsret\n- høj sensitivitet over for barnets frustration\n- konfliktbelastning fra Anders-feltet\n- tendens til at prioritere barnets umiddelbare affekt over samlet voksenbalance",
+    "L/W/main": "Line ser, ifølge Jacobs model, William som:\n- sit barn\n- sårbar og højt prioriteret\n- en dreng, hvis frustration vejer tungt\n- en, der først og fremmest må beskyttes\n- centrum for hendes ansvar og loyalitet\n- en figur, hvis ubehag hurtigt bliver handlingsstyrende i hjemmet",
+    "L/A/main": "Line ser, ifølge Jacobs model, Anders som:\n- central modpart i samværsfeltet\n- far til William, men også konfliktbærer\n- en person, der udfordrer hendes kontrol, tryghed eller forståelse af, hvad der er bedst for William\n- en figur, hun må forholde sig strategisk, følelsesmæssigt og juridisk til\n- en kilde til vedvarende pres, frustration og kampberedskab\n- en aktør, der holder hendes nervesystem og loyalitetssystem mobiliseret\n- en person, hun ikke bare kan ignorere, fordi han er vævet ind i William-feltet\n- en figur, der gør det svært for hende at være kun partner, fordi hun hele tiden også er mor i kampfelt",
+    "L/P/main": "Line ser, ifølge Jacobs model, Pia som:\n- sin mor\n- en del af sit bagland og sin følelsesmæssige referenceramme\n- en mulig støttefigur i pressede situationer\n- en person, hvis blik og loyalitet kan have vægt for hendes egen selvforståelse\n- en figur forbundet med familie, tryghed, normer og legitimitet\n- en person, som sandsynligvis ikke opleves som neutral, men som hendes side eller hendes nære felt\n- en mulig bekræfter af hendes oplevelse af situationen med Jacob, William og Anders",
+    "L/J/_ideel": "Jacobs model af Lines idealiserede billede af Jacob:\n- stærk partner\n- omsorgsfuld voksen\n- loyalt menneske\n- en der hjælper og støtter\n- en der burde kunne rumme kompleksiteten\n- en der kan være en stabil del af hendes liv",
+    "L/J/_Dark_intuition": "Jacobs model af Lines mørke intuition om Jacob:\n- han er for følsom\n- han tåler ikke William godt nok\n- han gør barnets adfærd til et større problem end den er\n- han presser på for mere magt eller kontrol, end hun ønsker at give\n- han kan i værste fald blive en trussel mod den orden, hun vil beskytte",
+    "L/W/_ideel": "Jacobs model af Lines idealiserede billede af William:\n- et elsket barn\n- et barn der må fylde\n- et barn der skal mødes og beskyttes\n- en dreng hvis behov skal tages alvorligt\n- en central figur i hendes liv, som fortjener loyalitet og omsorg",
+    "L/W/_Dark_intuition": "Jacobs model af Lines mørke intuition om William:\n- han er mere sårbar, end andre forstår\n- han kan blive såret eller belastet af for hård regulering\n- han tåler måske ikke nok modstand uden at det koster relationelt\n- andre voksne kan komme til at gøre ham uret\n- hvis hun ikke beskytter ham nok, svigter hun ham måske",
+    "L/A/_ideel": "Jacobs model af Lines idealiserede billede af Anders:\n- en far, der opfører sig rimeligt og forudsigeligt\n- en medforælder, der ikke skaber unødigt konflikttryk\n- en person, der accepterer klare rammer\n- en aktør, der ikke truer hendes oplevelse af stabilitet omkring William\n- en far, som kan holdes inden for en håndterbar og afgrænset rolle",
+    "L/A/_Dark_intuition": "Jacobs model af Lines mørke intuition om Anders:\n- han er en vedvarende trussel mod hendes ro og kontrol\n- han kan skabe uro omkring William og samværet\n- han tvinger hende ind i kampberedskab\n- han er en figur, hun ikke kan stole på nok til at slappe af\n- han repræsenterer et felt, hvor hun risikerer at miste indflydelse\n- han er ikke bare far, men også bærer af et pres, hun aldrig helt kan lægge fra sig",
+    "L/P/_ideel": "Jacobs model af Lines idealiserede billede af Pia:\n- en kærlig og loyal mor\n- en stabil støtte\n- en person, der forstår Line\n- en, der bakker hende op i svære konflikter\n- en figur, der giver følelsesmæssig og familiær legitimitet\n- en mor, der står ved hendes side",
+    "L/P/_Dark_intuition": "Jacobs model af Lines mørke intuition om Pia:\n- Pia ser måske ikke hele billedet\n- Pia kan være så loyal, at hun kommer til at bekræfte Line uden at korrigere hende\n- Pia kan være en del af et bagland, der gør selvkritik sværere\n- Pia kan styrke Lines fastlåsning, hvis hun mest fungerer som bekræftelse\n- Line kan måske frygte ikke at få fuld opbakning, hvis Pia så feltet mere nuanceret end forventet",
+    "W/_bevidst": "Jacob opfatter William som:\n- et energisk og følelsesstærkt barn\n- ofte høj-arousal-skabende i fællesrummet\n- et barn, der kan blive meget voldsomt frustreret\n- en central figur i hjemmets reguleringsdynamik\n- et barn, Jacob ikke ønsker at skade eller afvise\n- et barn, hvis adfærd i praksis får meget stor systemisk vægt",
+    "W/W/_Luc.mod.": "William fremstår, i Jacobs model, som:\n- impulsstyret\n- følelsesnær\n- hurtigt frustrerbar\n- vant til at fylde meget i rummet\n- præget af, at hans affekt hurtigt bliver centrum\n- ikke ondsindet, men systemisk magtfuld gennem sin position\n- et barn, der endnu ikke bærer voksent ansvar for regulering",
+    "W/J/main": "William ser, ifølge Jacobs model, Jacob som:\n- en sekundær voksen\n- en voksen med mindre automatisk autoritet end Line\n- en der vil have mere ro og mere regulering\n- en mulig begrænser af hans udfoldelse\n- en voksen, som ikke er helt samme slags tryghedsfigur som Line",
+    "W/W/_ideel": "Jacobs model af Williams idealiserede selvbillede:\n- glad\n- fri\n- elsket\n- central\n- set\n- en dreng, der må fylde og mærkes\n- en dreng, der bliver mødt og beskyttet",
+    "W/W/_Dark_intuition": "Jacobs model af Williams mørke intuition om sig selv:\n- måske er han for meget\n- måske mister han kontakt eller adgang, hvis han ikke bliver mødt\n- måske er voksnes grænser farlige eller afvisende\n- måske skal han kæmpe hårdt for at holde fast i opmærksomhed og plads",
+    "W/J/_ideel": "Jacobs model af Williams idealiserede billede af Jacob:\n- sjov voksen\n- rar voksen\n- en der er til at være sammen med\n- en ekstra voksen, som kan være tryg og positiv\n- en der gerne vil ham det godt",
+    "W/J/_Dark_intuition": "Jacobs model af Williams mørke intuition om Jacob:\n- Jacob vil begrænse mig\n- Jacob bryder sig ikke nok om min måde at være på\n- Jacob vil have noget andet end mor vil\n- Jacob er ikke helt sikker grund i systemet",
+    "A/_bevidst": "Jacob opfatter Anders som:\n- Lines ekskæreste\n- Williams far\n- central modpart i samværskonflikten\n- en indirekte, men tung belastningskilde i Jacobs liv med Line\n- en figur, hvis konflikt med Line koloniserer parforholdet\n- en person, Jacob ikke primært står i direkte relation til, men som alligevel fylder meget",
+    "A/A/_Luc.mod.": "Anders fremstår, i Jacobs model, som:\n- far med egne interesser og positioner i samværsfeltet\n- modpart til Line i en langvarig konflikt\n- en aktør med juridisk og følelsesmæssig betydning\n- en figur, der holder konfliktfeltet aktivt\n- en del af det pres, som Line bringer ind i nutidsrelationen",
+    "A/J/main": "Anders ser, ifølge Jacobs model, Jacob som:\n- perifer i den egentlige forældrekonflikt\n- en mulig støttefigur for Line\n- en outsider i forhold til det biologiske forældrefelt\n- en person, der ikke har legitim centralitet i sagen\n- eventuelt en uvedkommende eller sekundær voksen",
+    "A/A/_ideel": "Jacobs model af Anders’ idealiserede selvbillede:\n- kompetent far\n- legitim forælder\n- en der kæmper for sin plads\n- en der ikke vil skubbes ud\n- en der bør anerkendes i relation til William",
+    "A/A/_Dark_intuition": "Jacobs model af Anders’ mørke intuition om sig selv:\n- måske er han ved at miste indflydelse\n- måske bliver han fejlfortolket\n- måske er han ikke tilstrækkeligt inde i barnets liv\n- måske bliver han modarbejdet eller reduceret",
+    "A/J/_ideel": "Jacobs model af Anders’ idealiserede billede af Jacob:\n- irrelevant for kernekonflikten\n- neutral eller perifer\n- en voksen, der ikke blander sig for meget",
+    "A/J/_Dark_intuition": "Jacobs model af Anders’ mørke intuition om Jacob:\n- Jacob er en allieret for Line\n- Jacob kan forstyrre balancen\n- Jacob er endnu en voksen i feltet, som kan påvirke hans position indirekte",
+    "P/_bevidst": "Jacob opfatter Pia som:\n- Lines mor\n- en del af baglandet omkring Line\n- en relevant figur i familiesystemet\n- sandsynligvis en normbærer eller loyalitetsfigur omkring Line\n- en person, der kan have indirekte betydning, men som der er færre konkrete data om",
+    "P/P/_Luc.mod.": "Pia fremstår, i Jacobs model, som:\n- del af det udvidede familiesystem\n- mulig støttefigur for Line\n- mulig bærer af normer om moderskab, familie og loyalitet\n- en figur med sandsynlig, men kun delvist synlig indflydelse\n- ikke centralt belyst i materialet",
+    "P/J/main": "Pia ser, ifølge Jacobs model, Jacob som:\n- Lines partner\n- en mand i periferien af et allerede etableret familiesystem\n- en aktør, hvis plads måske er betinget og ikke helt selvskreven\n- en person, der vurderes gennem hans funktion i relation til Line og William",
+    "P/P/_ideel": "Jacobs model af Pias idealiserede selvbillede:\n- god mor\n- loyalt bagland\n- familiens beskytter\n- en der støtter sin datter\n- en der står fast om familien",
+    "P/P/_Dark_intuition": "Jacobs model af Pias mørke intuition om sig selv:\n- måske har hun ikke hele billedet\n- måske bidrager baglandet til fastlåsning\n- måske er hendes loyalitet med til at gøre nuancer sværere",
+    "P/J/_ideel": "Jacobs model af Pias idealiserede billede af Jacob:\n- ordentlig partner\n- stabil voksen\n- en der vil Line det godt\n- en der ikke gør feltet mere kaotisk",
+    "P/J/_Dark_intuition": "Jacobs model af Pias mørke intuition om Jacob:\n- måske passer han ikke helt ind\n- måske forstår han ikke familiesystemet godt nok\n- måske belaster han mere, end han gavner",
+    "L/_ideel": "Jacob ønsker, at Line er:\n- kærlig\n- fair\n- voksen-vendt\n- i stand til både at beskytte William og rumme Jacob\n- villig til at skabe et fælles regulerbart hjem\n- en partner, ikke kun en mor med en partner i periferien",
+    "L/_Dark_intuition": "Jacob frygter, at Line er:\n- for lukket om mor-barn-systemet\n- for lidt lydhør over for hans kropslige grænser\n- for tilbøjelig til at beskytte William på bekostning af parforholdet\n- for fastlåst i egen model\n- i gang med at skubbe Jacob ud uden helt at ville erkende det",
+    "W/_ideel": "Jacob ønsker, at William er:\n- tryg\n- glad\n- regulerbar\n- i stand til at tåle rimelige grænser\n- en del af et hjem, hvor både barn og voksne kan være der",
+    "W/_Dark_intuition": "Jacob frygter, at William er:\n- blevet for centrumstyrende i hjemmet\n- for lidt mødt med tydelige grænser\n- en ufrivillig bærer af systemets ubalance\n- i en position, hvor hans affekt får for meget magt",
+    "A/_ideel": "Jacob ønsker, at Anders er:\n- afgrænset\n- håndterbar\n- mindre konfliktproducerende\n- ikke konstant invaderende i parforholdets emotionelle rum\n- en baggrundsfigur frem for en permanent aktiv kraft",
+    "A/_Dark_intuition": "Jacob frygter, at Anders er:\n- en konstant konfliktgenerator i Lines verden\n- en konstant aktiveringskilde\n- en figur, der holder Line i kampmodus\n- en vedvarende tredje part i forholdet\n- en strukturel årsag til, at Line ikke kan møde Jacob med ro og åbenhed\n- et konfliktfelt, som koloniserer både hjemmet og parrelationen",
+    "P/_ideel": "Jacob ønsker, at Pia er:\n- fair\n- nuanceret\n- støttende uden at være ukritisk\n- en person, der kan bidrage til afspænding frem for fastlåsning\n- en figur, der ikke kun bekræfter, men også kan hjælpe med realitetskontakt",
+    "P/_Dark_intuition": "Jacob frygter, at Pia er:\n- endnu en loyalitetsforstærker omkring Line\n- en figur, der indirekte stabiliserer et system uden reel plads til Jacob\n- en, der primært ser Jacob gennem Lines frustrationer\n- en baggrundskraft, der gør det sværere for Line at bevæge sig"
+  },
+  "holonSizes": {},
+  "customHolons": {},
+  "holonTags": {
+    "J/_Luc.mod.": [
+      "K1"
+    ],
+    "L/J/main": [
+      "K1"
+    ],
+    "J/_ideel": [
+      "K2"
+    ],
+    "J/_Dark_intuition": [
+      "K2"
+    ],
+    "L/_ideel": [
+      "K3"
+    ],
+    "L/_Dark_intuition": [
+      "K3"
+    ],
+    "L/L/_Luc.mod.": [
+      "K4"
+    ],
+    "L/L/_Dark_intuition": [
+      "K4"
+    ],
+    "W/_bevidst": [
+      "K5"
+    ],
+    "W/W/_Luc.mod.": [
+      "K5"
+    ],
+    "W/_ideel": [
+      "K5"
+    ],
+    "W/_Dark_intuition": [
+      "K5"
+    ],
+    "A/_Dark_intuition": [
+      "K6"
+    ],
+    "P/_Dark_intuition": [
+      "K6"
+    ]
+  }
+}

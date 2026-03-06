@@ -284,6 +284,176 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        /* Chat panel */
+        .chat-panel {
+            background: white; border-radius: 1.25rem; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            transition: width 0.3s ease, opacity 0.2s; overflow: hidden;
+            display: flex; flex-direction: column; width: 0; opacity: 0;
+        }
+        .chat-panel.open { width: 380px; opacity: 1; }
+        .chat-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; min-width: 380px; }
+        .chat-header {
+            padding: 0.875rem 1.25rem; border-bottom: 1px solid #f1f5f9; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-title { font-size: 0.875rem; font-weight: 900; color: #059669; letter-spacing: -0.02em; }
+        .chat-subtitle { font-size: 8px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.125rem; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.625rem; }
+        .chat-welcome {
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem;
+            padding: 0.75rem; font-size: 11px; color: #166534; line-height: 1.5;
+        }
+        .chat-msg {
+            max-width: 88%; padding: 0.5rem 0.75rem; border-radius: 0.875rem;
+            font-size: 11.5px; line-height: 1.55; word-wrap: break-word; white-space: pre-wrap;
+        }
+        .chat-msg.user { align-self: flex-end; background: #4f46e5; color: white; border-bottom-right-radius: 0.2rem; }
+        .chat-msg.model { align-self: flex-start; background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 0.2rem; }
+        .chat-msg.model strong { color: #4f46e5; }
+        .chat-msg.model code { background: #e2e8f0; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-size: 10px; }
+        .chat-msg.func {
+            align-self: center; background: #fefce8; color: #a16207; border: 1px solid #fde047;
+            font-size: 9px; font-weight: 600; padding: 0.2rem 0.625rem; border-radius: 9999px;
+            font-family: 'Consolas', monospace; max-width: 100%;
+        }
+        .chat-msg.err {
+            align-self: center; background: #fee2e2; color: #dc2626; font-size: 10px;
+            padding: 0.375rem 0.75rem; border-radius: 9999px;
+        }
+        .chat-loading { align-self: flex-start; display: flex; gap: 0.3rem; padding: 0.75rem 1rem; }
+        .chat-loading span {
+            width: 7px; height: 7px; border-radius: 50%; background: #a7f3d0;
+            animation: cBounce 1.2s infinite;
+        }
+        .chat-loading span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-loading span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes cBounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-5px); } }
+        .chat-input-area {
+            padding: 0.625rem 0.75rem; border-top: 1px solid #f1f5f9; display: flex; gap: 0.5rem;
+            align-items: flex-end; background: #fafbfc;
+        }
+        .chat-input {
+            flex: 1; border: 1px solid #e2e8f0; border-radius: 0.625rem; padding: 0.5rem 0.625rem;
+            font-size: 12px; font-family: inherit; resize: none; outline: none; line-height: 1.4;
+            min-height: 36px; max-height: 100px;
+        }
+        .chat-input:focus { border-color: #6ee7b7; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+        .chat-send-btn {
+            width: 36px; height: 36px; border-radius: 0.625rem; border: none;
+            background: #10b981; color: white; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s;
+        }
+        .chat-send-btn:hover { background: #059669; }
+        .chat-send-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        .chat-toggle-btn {
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+            background: #10b981; border: none; border-radius: 0.5rem; color: white;
+            font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+        }
+        .chat-toggle-btn:hover { background: #059669; }
+        .chat-toggle-btn.active { background: #059669; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3); }
+
+        /* Conflict lines toggle */
+        .lines-btn {
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+            background: #f59e0b; border: none; border-radius: 0.5rem; color: white;
+            font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+        }
+        .lines-btn:hover { background: #d97706; }
+        .lines-btn.active { background: #d97706; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3); }
+
+        /* SVG overlay for conflict lines */
+        .conflict-svg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 500;
+        }
+        .conflict-svg .conflict-hit {
+            pointer-events: stroke; cursor: pointer;
+        }
+        .conflict-svg .conflict-hit:hover + line { stroke-opacity: 1; stroke-width: 3.5; }
+
+        /* Conflict analysis modal */
+        .conflict-modal-body {
+            padding: 1.25rem; overflow-y: auto; flex: 1;
+            font-size: 12.5px; line-height: 1.7; color: #1e293b;
+        }
+        .conflict-modal-body .cm-pair {
+            display: flex; gap: 0.75rem; margin-bottom: 1rem;
+        }
+        .conflict-modal-body .cm-holon {
+            flex: 1; background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 0.75rem; padding: 0.75rem;
+        }
+        .conflict-modal-body .cm-holon-title {
+            font-size: 11px; font-weight: 800; color: #4f46e5; margin-bottom: 0.25rem;
+        }
+        .conflict-modal-body .cm-holon-desc {
+            font-size: 9px; color: #94a3b8; font-style: italic; margin-bottom: 0.375rem;
+        }
+        .conflict-modal-body .cm-holon-content {
+            font-size: 10.5px; color: #475569; white-space: pre-wrap;
+        }
+        .conflict-modal-body .cm-analysis {
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.75rem;
+            padding: 1rem; margin-top: 0.5rem; white-space: pre-wrap;
+        }
+        .conflict-modal-body .cm-analysis.loading {
+            color: #94a3b8; font-style: italic;
+        }
+        .conflict-modal-body .cm-analysis strong { color: #4f46e5; }
+        .conflict-modal-body .cm-analysis code { background: #e2e8f0; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-size: 10px; }
+
+        /* Conflict list panel */
+        .conflict-list-panel {
+            background: white; border-radius: 1.25rem; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            transition: width 0.3s ease, opacity 0.2s; overflow: hidden;
+            display: flex; flex-direction: column; width: 0; opacity: 0;
+        }
+        .conflict-list-panel.open { width: 340px; opacity: 1; }
+        .cl-inner { flex: 1; display: flex; flex-direction: column; min-height: 0; min-width: 340px; }
+        .cl-header {
+            padding: 0.875rem 1.25rem; border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+        }
+        .cl-title { font-size: 0.875rem; font-weight: 900; color: #a16207; letter-spacing: -0.02em; }
+        .cl-subtitle { font-size: 8px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.125rem; }
+        .cl-body { flex: 1; overflow-y: auto; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.375rem; }
+        .cl-empty { padding: 1.5rem 1rem; text-align: center; font-size: 11px; color: #94a3b8; font-style: italic; }
+        .cl-item {
+            display: flex; align-items: stretch; gap: 0; border-radius: 0.625rem;
+            border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.15s;
+            overflow: hidden; background: white;
+        }
+        .cl-item:hover { border-color: #a5b4fc; box-shadow: 0 2px 8px rgba(99,102,241,0.1); }
+        .cl-item-tag {
+            writing-mode: vertical-rl; text-orientation: mixed;
+            font-size: 9px; font-weight: 900; padding: 0.375rem 0.25rem;
+            display: flex; align-items: center; justify-content: center;
+            min-width: 22px; letter-spacing: 0.05em;
+        }
+        .cl-item-body { flex: 1; padding: 0.5rem 0.625rem; min-width: 0; }
+        .cl-item-holons { font-size: 10px; font-weight: 700; color: #334155; line-height: 1.4; }
+        .cl-item-holons span { color: #94a3b8; font-weight: 400; }
+        .cl-item-summary { font-size: 9px; color: #64748b; margin-top: 0.25rem; line-height: 1.4; }
+        .cl-item-rank {
+            font-size: 14px; font-weight: 900; color: #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 0.625rem; min-width: 32px;
+        }
+        .cl-item-rank.ranked { color: #f59e0b; }
+        .cl-footer {
+            padding: 0.625rem 0.75rem; border-top: 1px solid #f1f5f9; background: #fafbfc;
+        }
+        .cl-analyze-btn {
+            width: 100%; padding: 0.5rem; border: none; border-radius: 0.5rem;
+            background: #f59e0b; color: white; font-size: 11px; font-weight: 700;
+            cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
+            justify-content: center; gap: 0.5rem;
+        }
+        .cl-analyze-btn:hover { background: #d97706; }
+        .cl-analyze-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -306,6 +476,14 @@
                 </div>
             </div>
             <div style="display:flex;gap:0.5rem;">
+                <button class="import-btn" onclick="loadFromFile()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Aaben fil
+                </button>
+                <button class="export-btn" onclick="saveToFile()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Gem fil
+                </button>
                 <button class="import-btn" onclick="openModal('importModal')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Import
@@ -314,11 +492,20 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     Eksport
                 </button>
+                <button class="lines-btn" id="linesToggleBtn" onclick="toggleConflictLines()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16"/><path d="M4 20l16-16"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="20" r="2"/><circle cx="4" cy="20" r="2"/><circle cx="20" cy="4" r="2"/></svg>
+                    Konflikter
+                </button>
+                <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    AI Chat
+                </button>
             </div>
         </header>
 
         <div class="main-content">
             <div class="canvas-container" id="canvasContainer">
+                <svg class="conflict-svg" id="conflictSvg"></svg>
                 <div class="canvas" id="canvas"></div>
                 <div class="holon-palette">
                     <div class="palette-label">Traek ind</div>
@@ -357,6 +544,52 @@
                     </div>
                 </div>
             </aside>
+
+            <!-- Conflict List Panel -->
+            <aside class="conflict-list-panel" id="conflictListPanel">
+                <div class="cl-inner">
+                    <div class="cl-header">
+                        <div>
+                            <h3 class="cl-title">Konflikter</h3>
+                            <p class="cl-subtitle">Klik for analyse</p>
+                        </div>
+                        <button class="close-btn" onclick="toggleConflictLines()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    <div class="cl-body" id="conflictListBody"></div>
+                    <div class="cl-footer">
+                        <button class="cl-analyze-btn" id="clAnalyzeBtn" onclick="analyzeAllConflicts()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg>
+                            Analyser konflikter
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- AI Chat Panel -->
+            <aside class="chat-panel" id="chatPanel">
+                <div class="chat-inner">
+                    <div class="chat-header">
+                        <div>
+                            <h3 class="chat-title">SMFI AI Assistent</h3>
+                            <p class="chat-subtitle">Gemini 2.5 Flash</p>
+                        </div>
+                        <button class="close-btn" onclick="toggleChat()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-welcome">Hej! Jeg er din SMFI-assistent. Jeg kan analysere konflikter, udfylde holoner, tilfoeje tags og hjaelpe dig med at forstaa situationen. Spoerg loes!</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <textarea id="chatInput" class="chat-input" placeholder="Skriv en besked..." rows="1"></textarea>
+                        <button class="chat-send-btn" id="chatSendBtn" onclick="sendChat()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </aside>
         </div>
 
         <footer class="footer" id="footer">Epistemisk Kohaerens via Lucidiansk Simulation</footer>
@@ -368,6 +601,20 @@
             <div class="modal-header"><h2>Eksport SMFI-analyse</h2><button class="modal-close" onclick="closeModal('exportModal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
             <div class="modal-body"><div id="exportStats" style="font-size:11px;color:#64748b;margin-bottom:0.75rem;"></div><textarea class="modal-textarea" id="exportTextarea" readonly></textarea></div>
             <div class="modal-footer"><button class="modal-btn" id="copyBtn" onclick="copyExport()"><span id="copyBtnText">Kopier</span></button></div>
+        </div>
+    </div>
+
+    <!-- Conflict Analysis Modal -->
+    <div class="modal-overlay" id="conflictModal">
+        <div class="modal-content" style="max-width:640px;">
+            <div class="modal-header">
+                <h2 id="conflictModalTitle">Konfliktanalyse</h2>
+                <button class="modal-close" onclick="closeModal('conflictModal')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            </div>
+            <div class="conflict-modal-body" id="conflictModalBody"></div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeModal('conflictModal')">Luk</button>
+            </div>
         </div>
     </div>
 
@@ -714,6 +961,311 @@ document.addEventListener('keydown', e => {
 });
 
 // ═══════════════════════════════════════
+// CONFLICT LINES
+// ═══════════════════════════════════════
+let conflictLinesOn = false;
+let conflictRankings = {}; // pairId -> { rank, summary }
+
+function toggleConflictLines() {
+    conflictLinesOn = !conflictLinesOn;
+    document.getElementById('linesToggleBtn').classList.toggle('active', conflictLinesOn);
+    document.getElementById('conflictListPanel').classList.toggle('open', conflictLinesOn);
+    drawConflictLines();
+    if (conflictLinesOn) renderConflictList();
+}
+
+function drawConflictLines() {
+    const svg = document.getElementById('conflictSvg');
+    if (!conflictLinesOn) { svg.innerHTML = ''; return; }
+
+    const ccRect = CC.getBoundingClientRect();
+    const tagColors = {};
+    TAG_DEFS.forEach(t => { tagColors[t.id] = t.color; });
+
+    // Group holon boxes by tag, keeping holon key
+    const groups = {}; // tagId -> [{x, y, key}]
+    document.querySelectorAll('.holon-box').forEach(box => {
+        const key = box.dataset.hkey;
+        if (!key) return;
+        const tags = holonTags[key];
+        if (!tags || tags.length === 0) return;
+        tags.forEach(tag => {
+            if (!groups[tag]) groups[tag] = [];
+            if (groups[tag].some(p => p.key === key)) return;
+            const r = box.getBoundingClientRect();
+            groups[tag].push({
+                x: r.left + r.width / 2 - ccRect.left,
+                y: r.top + r.height / 2 - ccRect.top,
+                key
+            });
+        });
+    });
+
+    let html = '';
+    for (const tag in groups) {
+        const pts = groups[tag];
+        const color = tagColors[tag] || '#888';
+        // Draw lines between all pairs — invisible thick hit area + visible line
+        for (let i = 0; i < pts.length; i++) {
+            for (let j = i + 1; j < pts.length; j++) {
+                const coords = 'x1="' + pts[i].x + '" y1="' + pts[i].y + '" x2="' + pts[j].x + '" y2="' + pts[j].y + '"';
+                // Invisible wide hit target
+                html += '<line ' + coords + ' stroke="transparent" stroke-width="16" class="conflict-hit" ' +
+                    'data-tag="' + tag + '" data-key1="' + pts[i].key.replace(/"/g,'&quot;') +
+                    '" data-key2="' + pts[j].key.replace(/"/g,'&quot;') + '"/>';
+                // Visible dashed line
+                html += '<line ' + coords + ' stroke="' + color + '" stroke-width="2.5" stroke-opacity="0.6" stroke-dasharray="6,4" style="pointer-events:none;"/>';
+            }
+        }
+        // Draw dots at each endpoint
+        pts.forEach(p => {
+            html += '<circle cx="' + p.x + '" cy="' + p.y + '" r="5" fill="' + color + '" fill-opacity="0.8" style="pointer-events:none;"/>';
+        });
+    }
+    svg.innerHTML = html;
+
+    // Attach click handlers to hit areas
+    svg.querySelectorAll('.conflict-hit').forEach(line => {
+        line.addEventListener('click', e => {
+            e.stopPropagation();
+            analyzeConflictLine(line.dataset.tag, line.dataset.key1, line.dataset.key2);
+        });
+    });
+}
+
+// Redraw conflict lines when canvas moves or zooms
+const _origUpdateT = updateT;
+updateT = function() { _origUpdateT(); if (conflictLinesOn) requestAnimationFrame(drawConflictLines); };
+const _origRender = render;
+render = function() {
+    _origRender();
+    if (conflictLinesOn) {
+        requestAnimationFrame(drawConflictLines);
+        renderConflictList();
+    }
+};
+
+// Look up notation + description for a holon key from full state
+function holonInfo(key) {
+    const state = getFullState();
+    const h = state.holons[key];
+    if (h) return h;
+    return { notation: key, description: '', content: holonNotes[key] || '', tags: holonTags[key] || [] };
+}
+
+// Analyze a conflict line between two holons
+async function analyzeConflictLine(tag, key1, key2) {
+    const h1 = holonInfo(key1);
+    const h2 = holonInfo(key2);
+    const color = TAG_DEFS.find(t => t.id === tag)?.color || '#888';
+
+    // Build modal content
+    const body = document.getElementById('conflictModalBody');
+    document.getElementById('conflictModalTitle').innerHTML =
+        '<span style="color:' + color + ';font-weight:900;">' + tag + '</span> Konfliktanalyse';
+
+    body.innerHTML =
+        '<div class="cm-pair">' +
+            '<div class="cm-holon">' +
+                '<div class="cm-holon-title">' + esc(h1.notation) + '</div>' +
+                '<div class="cm-holon-desc">' + esc(h1.description) + '</div>' +
+                '<div class="cm-holon-content">' + (h1.content ? esc(h1.content) : '<em style="color:#cbd5e1;">Ingen indhold</em>') + '</div>' +
+            '</div>' +
+            '<div class="cm-holon">' +
+                '<div class="cm-holon-title">' + esc(h2.notation) + '</div>' +
+                '<div class="cm-holon-desc">' + esc(h2.description) + '</div>' +
+                '<div class="cm-holon-content">' + (h2.content ? esc(h2.content) : '<em style="color:#cbd5e1;">Ingen indhold</em>') + '</div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="cm-analysis loading" id="cmAnalysis">Analyserer konflikten...</div>';
+
+    openModal('conflictModal');
+
+    // Call Gemini for analysis
+    try {
+        const prompt = 'Du er en SMFI-analytiker (Spatial Mental Field Inventory) baseret paa lucidiansk teori.\n\n' +
+            'Operatoer: ' + operatorName + '\n\n' +
+            'To holoner er markeret med samme konflikt-tag "' + tag + '", hvilket indikerer en spaending eller konflikt mellem dem.\n\n' +
+            'HOLON 1: ' + h1.notation + '\n' +
+            'Beskrivelse: ' + h1.description + '\n' +
+            'Indhold:\n' + (h1.content || '(tomt)') + '\n\n' +
+            'HOLON 2: ' + h2.notation + '\n' +
+            'Beskrivelse: ' + h2.description + '\n' +
+            'Indhold:\n' + (h2.content || '(tomt)') + '\n\n' +
+            'Giv en praecis, psykologisk informeret analyse paa dansk af:\n' +
+            '1. Hvad denne konflikt/spaending handler om\n' +
+            '2. Hvorfor disse to holoner er i konflikt (hvad er diskrepansen?)\n' +
+            '3. Hvilke dynamikker kan dette skabe for operatoeren?\n' +
+            '4. Mulige veje til integration eller oploesning\n\n' +
+            'Vaer konkret og henvis til holonernes specifikke indhold. Hold det relativt kort (max 200 ord).';
+
+        const res = await fetch(GEMINI_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: chatSystemPrompt() }] }
+            })
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || 'HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || 'Intet svar.';
+        const el = document.getElementById('cmAnalysis');
+        el.classList.remove('loading');
+        el.innerHTML = escChat(text);
+    } catch (e) {
+        const el = document.getElementById('cmAnalysis');
+        el.classList.remove('loading');
+        el.innerHTML = '<span style="color:#dc2626;">Fejl: ' + esc(e.message) + '</span>';
+    }
+}
+
+function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════
+// CONFLICT LIST & RANKING
+// ═══════════════════════════════════════
+
+// Collect unique conflict pairs across all tags
+function collectConflictPairs() {
+    const pairs = []; // [{tag, key1, key2, pairId}]
+    const seen = new Set();
+    for (const key in holonTags) {
+        const tags = holonTags[key];
+        if (!tags) continue;
+        tags.forEach(tag => {
+            // Find all other keys with same tag
+            for (const key2 in holonTags) {
+                if (key2 <= key) continue; // avoid duplicates
+                if (holonTags[key2] && holonTags[key2].includes(tag)) {
+                    const pairId = tag + '|' + key + '|' + key2;
+                    if (!seen.has(pairId)) {
+                        seen.add(pairId);
+                        pairs.push({ tag, key1: key, key2, pairId });
+                    }
+                }
+            }
+        });
+    }
+    return pairs;
+}
+
+function renderConflictList() {
+    const body = document.getElementById('conflictListBody');
+    const pairs = collectConflictPairs();
+
+    if (pairs.length === 0) {
+        body.innerHTML = '<div class="cl-empty">Ingen konflikter fundet.<br>Tilfoej K1-K6 tags til holoner for at markere konflikter.</div>';
+        return;
+    }
+
+    // Sort by ranking if available, otherwise by tag
+    pairs.sort((a, b) => {
+        const ra = conflictRankings[a.pairId]?.rank ?? 999;
+        const rb = conflictRankings[b.pairId]?.rank ?? 999;
+        if (ra !== rb) return ra - rb;
+        return a.tag.localeCompare(b.tag);
+    });
+
+    const tagBg = { K1:'#fee2e2', K2:'#f3e8ff', K3:'#fef9c3', K4:'#dbeafe', K5:'#d1fae5', K6:'#ffe4e6' };
+    const tagFg = { K1:'#dc2626', K2:'#7c3aed', K3:'#a16207', K4:'#2563eb', K5:'#059669', K6:'#e11d48' };
+
+    body.innerHTML = pairs.map((p, idx) => {
+        const h1 = holonInfo(p.key1);
+        const h2 = holonInfo(p.key2);
+        const ranking = conflictRankings[p.pairId];
+        const rankHtml = ranking
+            ? '<div class="cl-item-rank ranked">' + ranking.rank + '</div>'
+            : '<div class="cl-item-rank"></div>';
+        const summaryHtml = ranking
+            ? '<div class="cl-item-summary">' + esc(ranking.summary) + '</div>'
+            : '';
+        return '<div class="cl-item" onclick="analyzeConflictLine(\'' + esc(p.tag) + '\',\'' + p.key1.replace(/'/g,"\\'") + '\',\'' + p.key2.replace(/'/g,"\\'") + '\')">' +
+            '<div class="cl-item-tag" style="background:' + (tagBg[p.tag]||'#f1f5f9') + ';color:' + (tagFg[p.tag]||'#888') + ';">' + p.tag + '</div>' +
+            '<div class="cl-item-body">' +
+                '<div class="cl-item-holons">' + esc(h1.notation) + ' <span>&harr;</span> ' + esc(h2.notation) + '</div>' +
+                summaryHtml +
+            '</div>' +
+            rankHtml +
+        '</div>';
+    }).join('');
+}
+
+async function analyzeAllConflicts() {
+    const pairs = collectConflictPairs();
+    if (pairs.length === 0) return;
+
+    const btn = document.getElementById('clAnalyzeBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="chat-loading" style="padding:0;"><span></span><span></span><span></span></span> Analyserer...';
+
+    // Build a prompt that describes all conflict pairs
+    const state = getFullState();
+    let pairDescriptions = pairs.map((p, i) => {
+        const h1 = state.holons[p.key1] || { notation: p.key1, description: '', content: '' };
+        const h2 = state.holons[p.key2] || { notation: p.key2, description: '', content: '' };
+        return 'KONFLIKT ' + (i + 1) + ' [' + p.tag + ']:\n' +
+            '  Holon A: ' + h1.notation + ' — ' + h1.description + '\n' +
+            '  Indhold A: ' + (h1.content || '(tomt)') + '\n' +
+            '  Holon B: ' + h2.notation + ' — ' + h2.description + '\n' +
+            '  Indhold B: ' + (h2.content || '(tomt)');
+    }).join('\n\n');
+
+    const prompt = 'Du er en SMFI-analytiker. Operatoer: ' + operatorName + '.\n\n' +
+        'Her er alle identificerede konflikter i modellen:\n\n' + pairDescriptions + '\n\n' +
+        'Rangoerdn konflikterne efter vigtighed/akuthed. Hvilken konflikt boer operatoeren rette opmaerksomhed mod foerst?\n\n' +
+        'Svar KUN med valid JSON — et array af objekter med foelgende format (ingen markdown, ingen ```json):\n' +
+        '[{"index": 1, "rank": 1, "summary": "Kort beskrivelse paa 1-2 saetninger af konflikten og hvorfor den er vigtig"}, ...]\n\n' +
+        '"index" er konfliktens nummer (1-baseret) fra listen ovenfor.\n' +
+        '"rank" er rangeringen (1 = vigtigst).\n' +
+        '"summary" er en kort forklaring paa dansk.\n\n' +
+        'Returner KUN JSON-arrayet.';
+
+    try {
+        const res = await fetch(GEMINI_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: chatSystemPrompt() }] }
+            })
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || 'HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+        let text = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || '';
+        // Strip markdown code fences if present
+        text = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+        const rankings = JSON.parse(text);
+
+        // Map rankings back to pairIds
+        conflictRankings = {};
+        rankings.forEach(r => {
+            const idx = r.index - 1;
+            if (idx >= 0 && idx < pairs.length) {
+                conflictRankings[pairs[idx].pairId] = { rank: r.rank, summary: r.summary };
+            }
+        });
+
+        renderConflictList();
+    } catch (e) {
+        alert('Analyse fejlede: ' + e.message);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg> Analyser konflikter';
+}
+
+// ═══════════════════════════════════════
 // DRAG FROM PALETTE
 // ═══════════════════════════════════════
 (function() {
@@ -842,11 +1394,401 @@ function processImport() {
     closeModal('importModal');
 }
 
+// ═══════════════════════════════════════
+// SAVE / LOAD FILE
+// ═══════════════════════════════════════
+function saveToFile() {
+    const data = {
+        version: '4.0',
+        operatorName,
+        actors: JSON.parse(JSON.stringify(actors)),
+        holonNotes: { ...holonNotes },
+        holonSizes: { ...holonSizes },
+        customHolons: JSON.parse(JSON.stringify(customHolons)),
+        holonTags: JSON.parse(JSON.stringify(holonTags))
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SMFI_' + operatorName + '_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function loadFromFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (!data.operatorName || !data.actors) throw new Error('Ugyldig fil');
+                operatorName = data.operatorName;
+                document.getElementById('operatorNameInput').value = operatorName;
+                actors = data.actors || [];
+                holonNotes = data.holonNotes || {};
+                holonSizes = data.holonSizes || {};
+                customHolons = data.customHolons || {};
+                holonTags = data.holonTags || {};
+                closePanel();
+                render();
+            } catch(err) {
+                alert('Kunne ikke indlaese filen: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
 // Modal helpers
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => { m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); });
+
+// ═══════════════════════════════════════
+// AI CHAT (Gemini)
+// ═══════════════════════════════════════
+const GEMINI_KEY = 'AIzaSyD5Ukfl3tcqeN-8AlTexjNzmAKcSHRU4xw';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + GEMINI_KEY;
+
+let chatOpen = false;
+let chatLoading = false;
+let chatDisplayMsgs = [];   // [{role:'user'|'model'|'func'|'err', text}]
+let chatApiContents = [];    // Gemini API contents array
+
+const CHAT_TOOLS = [{ functionDeclarations: [
+    {
+        name: 'get_full_state',
+        description: 'Get complete snapshot of all actors, holons with their notes/content, and conflict tags in the SMFI model. Always call this before giving analysis.',
+        parameters: { type: 'OBJECT', properties: {} }
+    },
+    {
+        name: 'write_holon_content',
+        description: 'Write or replace the text content/notes of a specific holon identified by its key.',
+        parameters: { type: 'OBJECT', properties: {
+            holon_key: { type: 'STRING', description: 'The holon key, e.g. "J/_Luc.mod." or "L/L/_Luc.mod." — get keys from get_full_state' },
+            content: { type: 'STRING', description: 'The full text content to write' }
+        }, required: ['holon_key', 'content'] }
+    },
+    {
+        name: 'add_conflict_tag',
+        description: 'Add a conflict tag (K1-K6) to a holon.',
+        parameters: { type: 'OBJECT', properties: {
+            holon_key: { type: 'STRING', description: 'The holon key' },
+            tag: { type: 'STRING', description: 'Tag: K1, K2, K3, K4, K5 or K6' }
+        }, required: ['holon_key', 'tag'] }
+    },
+    {
+        name: 'remove_conflict_tag',
+        description: 'Remove a conflict tag from a holon.',
+        parameters: { type: 'OBJECT', properties: {
+            holon_key: { type: 'STRING', description: 'The holon key' },
+            tag: { type: 'STRING', description: 'Tag to remove' }
+        }, required: ['holon_key', 'tag'] }
+    },
+    {
+        name: 'add_actor',
+        description: 'Add a new actor to the model.',
+        parameters: { type: 'OBJECT', properties: {
+            name: { type: 'STRING', description: 'Name of the new actor' },
+            parent_nesting: { type: 'ARRAY', items: { type: 'STRING' }, description: 'Nesting path as actor name array. [] for top-level, ["Line"] for inside Line\'s field.' }
+        }, required: ['name', 'parent_nesting'] }
+    },
+    {
+        name: 'delete_actor_by_name',
+        description: 'Delete an actor by name.',
+        parameters: { type: 'OBJECT', properties: {
+            name: { type: 'STRING', description: 'Actor name to delete' }
+        }, required: ['name'] }
+    },
+    {
+        name: 'rename_actor_by_name',
+        description: 'Rename an existing actor.',
+        parameters: { type: 'OBJECT', properties: {
+            old_name: { type: 'STRING', description: 'Current name' },
+            new_name: { type: 'STRING', description: 'New name' }
+        }, required: ['old_name', 'new_name'] }
+    }
+]}];
+
+function chatSystemPrompt() {
+    return `Du er en AI-assistent integreret i SMFI (Spatial Mental Field Inventory) Nested Actor Mapper v4.0.
+
+SMFI er et psykologisk modelleringsvaerktøj baseret på lucidiansk teori. Det kortlaegger, hvordan en primaer operatør mentalt modellerer sig selv og andre aktører, og afslører potentielle konflikter og blinde pletter.
+
+AKTUEL OPERATØR: "${operatorName}"
+
+NØGLEBEGREBER:
+- Operatør: Den primaere person (${operatorName})
+- Aktører: Andre personer operatøren har mentale modeller af
+- MOF (Mentalt Operativt Felt): Bevidste mentale modeller
+- LOF (Latent Operativt Felt): Under taersklen, latente/ubevidste modeller
+- Taerskel: Graensen mellem bevidst og latent
+
+HOLON-TYPER (suffix):
+- _Luc.mod. : Ejerens bevidste selvmodel
+- _bevidst : Operatørens bevidste opfattelse af en aktør
+- _ideel : Idealiseret billede af personen
+- _Dark_intuition : Mørk intuition / skyggeaspekt
+- (intet suffix / "main") : Ejerens model af en anden person
+
+NOTATION:
+- J(J)_Luc.mod. = ${operatorName}s selvmodel
+- J(L)_bevidst = ${operatorName}s bevidste model af en aktør med initial L
+- J(L(L))_Luc.mod. = ${operatorName} forestiller sig hvordan L ser sig selv
+- J(L(J)) = ${operatorName} forestiller sig hvordan L ser ${operatorName}
+
+HOLON-NØGLER bruger formatet: initial/initial/.../suffix
+Eksempel: "J/_Luc.mod." for selvmodel, "L/_bevidst" for bevidst model af aktør L.
+
+KONFLIKT-TAGS (K1-K6) markerer holoner involveret i specifikke konflikter. Brug dem til at spore tvaergaaende konflikttemaer.
+
+DU KAN:
+1. get_full_state — hent alle aktører, holoner, noter og tags
+2. write_holon_content — skriv indhold til en holon via nøgle
+3. add_conflict_tag / remove_conflict_tag — tilføj/fjern K1-K6 tags
+4. add_actor — tilføj ny aktør (top-level eller nested)
+5. delete_actor_by_name / rename_actor_by_name — slet/omdøb aktør
+
+REGLER:
+- Svar ALTID på dansk
+- Kald ALTID get_full_state FØR du analyserer, saa du har aktuel data
+- Vaer eftertaenksom, nuanceret og psykologisk informeret
+- Naar du analyserer, kig efter diskrepanser mellem:
+  * Selvbillede vs. hvordan andre ser én
+  * Idealbilleder vs. mørke intuitioner
+  * Bevidste vs. latente modeller
+- Forklar altid HVORFOR du tagger en holon
+- Vaer en aktiv sparringspartner — stil opklarende spørgsmaal
+- Hold svar relativt korte og praecise`;
+}
+
+// Collect full state snapshot for AI
+function getFullState() {
+    const state = { operator: operatorName, actors: JSON.parse(JSON.stringify(actors)), holons: {} };
+    function collect(nesting, fa) {
+        const owner = nesting.length > 0 ? nesting[nesting.length - 1] : operatorName;
+        addH(state.holons, nesting, owner, '_Luc.mod.');
+        if (nesting.length > 0 && owner !== operatorName) addH(state.holons, nesting, operatorName, '');
+        fa.forEach(a => {
+            addH(state.holons, nesting, a.name, '_bevidst');
+            collect([...nesting, a.name], a.children);
+        });
+        addH(state.holons, nesting, owner, '_ideel');
+        addH(state.holons, nesting, owner, '_Dark_intuition');
+        if (nesting.length > 0 && owner !== operatorName) {
+            addH(state.holons, nesting, operatorName, '_ideel');
+            addH(state.holons, nesting, operatorName, '_Dark_intuition');
+        }
+        fa.forEach(a => {
+            addH(state.holons, nesting, a.name, '_ideel');
+            addH(state.holons, nesting, a.name, '_Dark_intuition');
+        });
+        // custom holons
+        const zone = nesting.length > 0 ? nesting.map(I).join('/') : 'top';
+        ['mof','lof'].forEach(sec => {
+            (customHolons[zone+'/'+sec] || []).forEach(ch => {
+                state.holons[ch.id] = { notation: ch.title, description: 'Brugerdefineret holon', content: holonNotes[ch.id]||'', tags: holonTags[ch.id]||[] };
+            });
+        });
+    }
+    function addH(obj, nesting, target, suffix) {
+        const key = K(nesting, target, suffix);
+        obj[key] = { notation: N(nesting, target, suffix), description: D(nesting, target, suffix), content: holonNotes[key]||'', tags: holonTags[key]||[] };
+    }
+    collect([], actors);
+    return state;
+}
+
+// Execute a function call from Gemini
+function execFn(name, args) {
+    switch(name) {
+        case 'get_full_state':
+            return getFullState();
+        case 'write_holon_content':
+            holonNotes[args.holon_key] = args.content;
+            if (activeKey === args.holon_key) DA.value = args.content;
+            render();
+            return { ok: true, msg: 'Wrote to ' + args.holon_key };
+        case 'add_conflict_tag':
+            if (!holonTags[args.holon_key]) holonTags[args.holon_key] = [];
+            if (!holonTags[args.holon_key].includes(args.tag)) holonTags[args.holon_key].push(args.tag);
+            render();
+            return { ok: true, msg: 'Added ' + args.tag + ' to ' + args.holon_key };
+        case 'remove_conflict_tag':
+            if (holonTags[args.holon_key]) {
+                holonTags[args.holon_key] = holonTags[args.holon_key].filter(t => t !== args.tag);
+                if (!holonTags[args.holon_key].length) delete holonTags[args.holon_key];
+            }
+            render();
+            return { ok: true, msg: 'Removed ' + args.tag + ' from ' + args.holon_key };
+        case 'add_actor': {
+            const list = findList(args.parent_nesting || []);
+            if (!list) return { ok: false, msg: 'Invalid nesting' };
+            list.push({ id: uid('a'), name: args.name, children: [] });
+            render();
+            return { ok: true, msg: 'Added actor "' + args.name + '"' };
+        }
+        case 'delete_actor_by_name': {
+            const ok = (function rm(list) {
+                const i = list.findIndex(a => a.name === args.name);
+                if (i >= 0) { list.splice(i,1); return true; }
+                return list.some(a => rm(a.children));
+            })(actors);
+            if (ok) render();
+            return { ok, msg: ok ? 'Deleted "'+args.name+'"' : 'Not found' };
+        }
+        case 'rename_actor_by_name': {
+            const ok = (function find(list) {
+                for (const a of list) {
+                    if (a.name === args.old_name) { a.name = args.new_name; return true; }
+                    if (find(a.children)) return true;
+                }
+                return false;
+            })(actors);
+            if (ok) render();
+            return { ok, msg: ok ? 'Renamed to "'+args.new_name+'"' : 'Not found' };
+        }
+        default:
+            return { ok: false, msg: 'Unknown: '+name };
+    }
+}
+
+// Toggle chat panel
+function toggleChat() {
+    chatOpen = !chatOpen;
+    document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+    document.getElementById('chatToggleBtn').classList.toggle('active', chatOpen);
+    if (chatOpen) setTimeout(() => document.getElementById('chatInput').focus(), 300);
+}
+
+// Render chat messages
+function renderChatUI() {
+    const el = document.getElementById('chatMessages');
+    let h = '<div class="chat-welcome">Hej! Jeg er din SMFI-assistent. Jeg kan analysere konflikter, udfylde holoner, tilfoeje tags og hjaelpe dig med at forstaa situationen. Spoerg loes!</div>';
+    for (const m of chatDisplayMsgs) {
+        const cls = m.role === 'model' ? 'model' : m.role === 'user' ? 'user' : m.role === 'func' ? 'func' : 'err';
+        h += '<div class="chat-msg ' + cls + '">' + escChat(m.text) + '</div>';
+    }
+    if (chatLoading) h += '<div class="chat-loading"><span></span><span></span><span></span></div>';
+    el.innerHTML = h;
+    el.scrollTop = el.scrollHeight;
+}
+
+function escChat(s) {
+    let t = s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // basic markdown: **bold**, `code`
+    t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+    return t;
+}
+
+// Send message
+async function sendChat() {
+    const inp = document.getElementById('chatInput');
+    const text = inp.value.trim();
+    if (!text || chatLoading) return;
+    inp.value = '';
+    inp.style.height = 'auto';
+
+    chatDisplayMsgs.push({ role: 'user', text });
+    chatApiContents.push({ role: 'user', parts: [{ text }] });
+    chatLoading = true;
+    renderChatUI();
+
+    try {
+        await geminiLoop();
+    } catch(e) {
+        chatDisplayMsgs.push({ role: 'err', text: 'Fejl: ' + e.message });
+    }
+
+    chatLoading = false;
+    renderChatUI();
+    render(); // Ensure canvas fully reflects all AI changes
+}
+
+// Gemini function-calling loop
+async function geminiLoop() {
+    for (let i = 0; i < 8; i++) {
+        const body = {
+            contents: chatApiContents,
+            systemInstruction: { parts: [{ text: chatSystemPrompt() }] },
+            tools: CHAT_TOOLS
+        };
+
+        const res = await fetch(GEMINI_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error?.message || 'HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+        const parts = data.candidates?.[0]?.content?.parts;
+        if (!parts || parts.length === 0) throw new Error('Tomt svar fra AI');
+
+        const fnCalls = parts.filter(p => p.functionCall);
+        const textParts = parts.filter(p => p.text);
+
+        if (fnCalls.length > 0) {
+            // Add model's function call response to API history
+            chatApiContents.push({ role: 'model', parts });
+
+            // Execute each function and build responses
+            const fnResponses = [];
+            for (const fc of fnCalls) {
+                const result = execFn(fc.functionCall.name, fc.functionCall.args || {});
+                fnResponses.push({ functionResponse: { name: fc.functionCall.name, response: result } });
+                // Show subtle indicator in chat
+                const label = fc.functionCall.name.replace(/_/g,' ');
+                chatDisplayMsgs.push({ role: 'func', text: label + '()' });
+            }
+
+            chatApiContents.push({ role: 'user', parts: fnResponses });
+            renderChatUI();
+
+            // Also capture any text alongside function calls
+            if (textParts.length > 0) {
+                const t = textParts.map(p => p.text).join('');
+                chatDisplayMsgs.push({ role: 'model', text: t });
+                renderChatUI();
+            }
+
+            continue; // Loop to get next response
+        }
+
+        // Pure text response — we're done
+        if (textParts.length > 0) {
+            const t = textParts.map(p => p.text).join('');
+            chatDisplayMsgs.push({ role: 'model', text: t });
+            chatApiContents.push({ role: 'model', parts });
+        }
+        return;
+    }
+}
+
+// Chat input: Enter to send, Shift+Enter for newline, auto-resize
+document.getElementById('chatInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+document.getElementById('chatInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
 
 // ═══════════════════════════════════════
 // INIT
