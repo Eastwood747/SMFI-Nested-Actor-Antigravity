@@ -454,6 +454,202 @@
         }
         .cl-analyze-btn:hover { background: #d97706; }
         .cl-analyze-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        /* ══════════ PERSONALITY MODAL (pm-) ══════════ */
+        .pm-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            display: none; align-items: flex-start; justify-content: center;
+            z-index: 2500; padding: 1rem; overflow-y: auto;
+        }
+        .pm-overlay.open { display: flex; }
+        .pm-container {
+            background: #fffdf8; border: 1px solid #d4c9b0; border-radius: 8px;
+            width: min(1200px, 96vw); margin: 1rem auto; padding: 0;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
+            font-family: 'DM Sans', sans-serif; color: #2a2016;
+        }
+        .pm-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.5rem; border-bottom: 1px solid #d4c9b0;
+            background: linear-gradient(135deg, #f5f0e8 0%, #fffdf8 100%);
+            border-radius: 8px 8px 0 0;
+        }
+        .pm-header-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 400; }
+        .pm-header-sub { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #8a7d68; margin-top: 0.15rem; }
+        .pm-close { background: none; border: 1px solid #d4c9b0; border-radius: 4px; padding: 0.35rem 0.75rem;
+            font-size: 0.8rem; cursor: pointer; color: #2a2016; transition: all 0.15s; }
+        .pm-close:hover { background: #2a2016; color: #fffdf8; }
+
+        .pm-layout {
+            display: grid; grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem; padding: 1rem 1.5rem;
+        }
+        @media (max-width: 960px) { .pm-layout { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) { .pm-layout { grid-template-columns: 1fr; } }
+
+        .pm-panel {
+            background: #fffdf8; border: 1px solid #d4c9b0; border-radius: 3px; padding: 1.25rem;
+        }
+        .pm-panel-title {
+            font-family: 'DM Mono', monospace; font-size: 0.67rem; letter-spacing: 0.12em;
+            text-transform: uppercase; color: #8a7d68; margin-bottom: 1rem;
+            padding-bottom: 0.65rem; border-bottom: 1px solid #d4c9b0;
+        }
+        .pm-full { grid-column: 1 / -1; }
+
+        .pm-presets-grid { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+        .pm-preset-category {
+            font-family: 'DM Mono', monospace; font-size: 0.62rem; color: #8a7d68;
+            letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.65rem;
+            margin-bottom: 0.25rem; width: 100%;
+        }
+        .pm-preset-btn {
+            font-family: 'DM Sans', sans-serif; font-size: 0.78rem; padding: 0.35rem 0.8rem;
+            border: 1px solid #d4c9b0; border-radius: 2px; background: #f5f0e8;
+            color: #2a2016; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .pm-preset-btn:hover { background: #2a2016; color: #fffdf8; border-color: #2a2016; }
+        .pm-preset-btn.active { background: #c4553a; color: white; border-color: #c4553a; }
+
+        .pm-dim-group { margin-bottom: 1rem; }
+        .pm-dim-group-label {
+            font-family: 'DM Mono', monospace; font-size: 0.61rem;
+            letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem;
+        }
+
+        .pm-slider-row { margin-bottom: 0.75rem; }
+        .pm-slider-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.25rem; }
+        .pm-slider-label { font-size: 0.78rem; font-weight: 500; }
+        .pm-slider-value {
+            font-family: 'DM Mono', monospace; font-size: 0.72rem; color: #c4553a;
+            min-width: 3.6rem; text-align: right;
+        }
+        .pm-slider-ends { display: flex; justify-content: space-between; margin-top: 0.15rem; }
+        .pm-slider-end { font-size: 0.62rem; color: #8a7d68; font-style: italic; max-width: 48%; }
+        .pm-slider-end.right { text-align: right; }
+        .pm-slider-note { font-size: 0.64rem; color: #8a7d68; font-style: italic; line-height: 1.4; margin-top: 0.3rem; }
+
+        .pm-slider-row.bipolar .pm-range { --fill: #7a5c8a; --thumb: #7a5c8a; }
+
+        .pm-slider-row.dual { position: relative; padding-top: 10px; padding-bottom: 16px; }
+        .pm-slider-row.dual .pm-range {
+            position: absolute; left: 0; top: 28px; width: 100%; pointer-events: auto;
+        }
+        .pm-slider-row.dual .pm-range[data-mode="rest"] {
+            --fill: #4a7c6f; --thumb: #4a7c6f; --thumbOffsetY: -10px; z-index: 2; opacity: 0.92;
+        }
+        .pm-slider-row.dual .pm-range[data-mode="stress"] {
+            --fill: #c4553a; --thumb: #c4553a; --thumbOffsetY: 10px; z-index: 3; opacity: 0.78;
+        }
+
+        .pm-range {
+            --fill: #c4553a; --thumb: #c4553a;
+            -webkit-appearance: none; width: 100%; height: 3px;
+            background: linear-gradient(to right, var(--fill) 0%, var(--fill) calc(var(--val,50) * 1%), #ddd5c0 calc(var(--val,50) * 1%));
+            border-radius: 2px; outline: none; cursor: pointer;
+        }
+        .pm-range::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 13px; height: 13px; background: #fffdf8;
+            border: 2px solid var(--thumb); border-radius: 50%;
+            transform: translateY(var(--thumbOffsetY, 0px)) scale(1); transition: transform 0.1s;
+        }
+        .pm-range::-webkit-slider-thumb:hover { transform: translateY(var(--thumbOffsetY, 0px)) scale(1.3); }
+        .pm-range::-moz-range-thumb {
+            width: 13px; height: 13px; background: #fffdf8;
+            border: 2px solid var(--thumb); border-radius: 50%; cursor: pointer;
+            transform: translateY(var(--thumbOffsetY, 0px)) scale(1); transition: transform 0.1s;
+        }
+        .pm-range::-moz-range-thumb:hover { transform: translateY(var(--thumbOffsetY, 0px)) scale(1.3); }
+
+        /* PM Matrix */
+        .pm-matrix-container { overflow-x: auto; margin-top: 0.5rem; }
+        .pm-matrix { border-collapse: collapse; width: 100%; font-size: 0.7rem; }
+        .pm-matrix th, .pm-matrix td {
+            border: 1px solid #d4c9b0; padding: 0.4rem 0.5rem;
+            text-align: center; vertical-align: middle; line-height: 1.35;
+        }
+        .pm-matrix th {
+            font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.06em;
+            color: #8a7d68; background: #f5f0e8; font-weight: 400;
+        }
+        .pm-matrix td { background: #fffdf8; font-size: 0.68rem; }
+        .pm-matrix .active-cell { background: #e8f0d8; border-color: #4a7c6f; font-weight: 500; color: #2a4a2a; }
+        .pm-matrix .row-header { font-family: 'DM Mono', monospace; font-size: 0.6rem; color: #8a7d68; text-align: right; background: #f5f0e8; }
+        .pm-matrix .corner { background: #f5f0e8; }
+        .pm-matrix-note { font-size: 0.64rem; color: #8a7d68; font-style: italic; margin-top: 0.5rem; line-height: 1.4; }
+
+        /* PM Dark Triad */
+        .pm-dark-triad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; margin-top: 0.5rem; }
+        .pm-dt-item { text-align: center; padding: 0.6rem 0.4rem; border: 1px solid #d4c9b0; border-radius: 2px; background: #f5f0e8; }
+        .pm-dt-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8a7d68; margin-bottom: 0.3rem; }
+        .pm-dt-score { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #c4553a; }
+        .pm-dt-bar-track { height: 3px; background: #ddd5c0; border-radius: 2px; margin-top: 0.3rem; overflow: hidden; }
+        .pm-dt-bar-fill { height: 100%; background: #c4553a; border-radius: 2px; transition: width 0.4s ease; }
+
+        /* PM Report */
+        .pm-report-content { display: grid; grid-template-columns: 300px 1fr; gap: 1.25rem; }
+        @media (max-width: 700px) { .pm-report-content { grid-template-columns: 1fr; } }
+        .pm-radar-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; }
+        .pm-report-text h2 { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 400; margin-bottom: 0.4rem; }
+        .pm-profile-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: #c4553a; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem; }
+        .pm-report-section { margin-bottom: 0.8rem; }
+        .pm-report-section h3 { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: #8a7d68; margin-bottom: 0.25rem; font-family: 'DM Mono', monospace; }
+        .pm-report-section p { font-size: 0.8rem; line-height: 1.5; }
+        .pm-divider { height: 1px; background: #d4c9b0; margin: 0.8rem 0; }
+
+        .pm-dim-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.32rem; }
+        .pm-dim-bar-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: #8a7d68; width: 120px; flex-shrink: 0; }
+        .pm-dim-bar-track { flex: 1; height: 3px; background: #ddd5c0; border-radius: 2px; overflow: hidden; position: relative; }
+        .pm-dim-bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+        .pm-dim-bar-num { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: #8a7d68; width: 3.2rem; text-align: right; }
+
+        /* PM Profil button */
+        .pm-profil-btn {
+            background: #f5f0e8; border: 1px solid #d4c9b0; color: #8a7d68;
+            padding: 0.2rem 0.5rem; border-radius: 0.375rem; font-size: 9px;
+            font-weight: 700; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .pm-profil-btn:hover { background: #4a7c6f; color: white; border-color: #4a7c6f; }
+
+        /* PM Compare modal */
+        .pm-compare-modal {
+            position: fixed; inset: 0; background: rgba(42,32,22,0.35);
+            display: none; align-items: center; justify-content: center;
+            padding: 1rem; z-index: 2600;
+        }
+        .pm-compare-modal.open { display: flex; }
+        .pm-compare-card {
+            width: min(980px, 96vw); max-height: 86vh; overflow: auto;
+            background: #fffdf8; border: 1px solid #d4c9b0; border-radius: 6px; padding: 1rem;
+        }
+        .pm-compare-card-header {
+            display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+            border-bottom: 1px solid #d4c9b0; padding-bottom: 0.75rem; margin-bottom: 0.75rem;
+        }
+        .pm-compare-card-title { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8a7d68; }
+        .pm-compare-controls { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+        .pm-compare-controls select { font-family: 'DM Sans', sans-serif; font-size: 0.78rem; padding: 0.35rem 0.5rem; border: 1px solid #d4c9b0; border-radius: 3px; background: #f5f0e8; }
+        .pm-compare-list { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.9rem; }
+        .pm-compare-item { display: flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.45rem; border: 1px solid #d4c9b0; border-radius: 4px; background: #f5f0e8; }
+        .pm-compare-item input { accent-color: #3d5e8a; }
+        .pm-compare-item label { font-size: 0.78rem; cursor: pointer; }
+        .pm-compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.85rem; }
+        .pm-compare-radar { border: 1px solid #d4c9b0; border-radius: 6px; background: #f5f0e8; padding: 0.65rem; }
+        .pm-compare-radar h4 { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: #8a7d68; margin-bottom: 0.4rem; }
+        .pm-compare-radar canvas { width: 100%; height: auto; display: block; }
+        .pm-compare-overlay { margin-top: 0.2rem; }
+        .pm-compare-overlay-canvaswrap { border: 1px solid #d4c9b0; border-radius: 6px; background: #f5f0e8; padding: 0.6rem; }
+        .pm-compare-hint { font-size: 0.66rem; color: #8a7d68; font-style: italic; }
+        .pm-compare-analysis { border: 1px solid #d4c9b0; background: #f5f0e8; border-radius: 6px; padding: 0.75rem; }
+        .pm-compare-analysis h3 { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: #8a7d68; margin: 0.55rem 0 0.25rem; }
+        .pm-compare-analysis p { font-size: 0.82rem; line-height: 1.55; }
+        .pm-compare-analysis ul { margin: 0.3rem 0 0.55rem 1.1rem; }
+        .pm-compare-analysis li { font-size: 0.8rem; line-height: 1.45; margin: 0.18rem 0; }
+        .pm-badge { display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid #d4c9b0; background: #fffdf8; padding: 0.12rem 0.45rem; border-radius: 999px; font-size: 0.72rem; }
+        .pm-badge-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(42,32,22,0.25); }
+        .pm-legend-item { display: flex; align-items: center; gap: 0.35rem; border: 1px solid #d4c9b0; background: #fffdf8; padding: 0.18rem 0.4rem; border-radius: 999px; }
+        .pm-legend-swatch { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(42,32,22,0.25); }
+        .pm-legend-label { font-size: 0.74rem; }
     </style>
 </head>
 <body>
@@ -627,6 +823,297 @@
         </div>
     </div>
 
+    <!-- Personality Modal -->
+    <div class="pm-overlay" id="pmOverlay">
+      <div class="pm-container">
+        <div class="pm-header">
+          <div>
+            <div class="pm-header-title" id="pmTitle">Personlighedsprofil</div>
+            <div class="pm-header-sub">25 strukturelle dimensioner · Rest & Stress · Jacob Elgaard</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="pm-preset-btn" id="pmCompareOpen" onclick="pmOpenCompare()">Sammenlign</button>
+            <button class="pm-close" onclick="closePersonality()">Luk</button>
+          </div>
+        </div>
+
+        <div class="pm-layout">
+          <!-- PRESETS -->
+          <div class="pm-panel pm-full">
+            <div class="pm-panel-title">Personlighedstyper & Forstyrrelser</div>
+            <div class="pm-presets-grid" id="pmPresetsGrid"></div>
+          </div>
+
+          <!-- PANEL 1: FUNDAMENT + SELVSYSTEM -->
+          <div class="pm-panel">
+            <div class="pm-panel-title">Fundament & Selvsystem</div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#4a7c6f">Fundament</div>
+              <div class="pm-slider-row" id="pm-row-attachment">
+                <div class="pm-slider-header"><span class="pm-slider-label">Tilknytningssikkerhed</span><span class="pm-slider-value" id="pm-val-attachment">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-attachment" data-dim="attachment">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Alle forlader mig"</span><span class="pm-slider-end right">"Jeg er okay alene"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-affect">
+                <div class="pm-slider-header"><span class="pm-slider-label">Affektiv grundtone</span><span class="pm-slider-value" id="pm-val-affect">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-affect" data-dim="affect">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Skam / frygt / tomhed</span><span class="pm-slider-end right">Grundlæggende ro</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-activation">
+                <div class="pm-slider-header"><span class="pm-slider-label">Aktiveringsøkonomi</span><span class="pm-slider-value" id="pm-val-activation">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-activation" data-dim="activation">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Social udtømning</span><span class="pm-slider-end right">Social genopladning</span></div>
+              </div>
+            </div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#7a5c8a">Selvsystem</div>
+              <div class="pm-slider-row" id="pm-row-selfworth">
+                <div class="pm-slider-header"><span class="pm-slider-label">Selvværdsbaseline</span><span class="pm-slider-value" id="pm-val-selfworth">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-selfworth" data-dim="selfworth">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Jeg er ingenting"</span><span class="pm-slider-end right">"Jeg er nok"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-identity">
+                <div class="pm-slider-header"><span class="pm-slider-label">Identitetskontinuitet</span><span class="pm-slider-value" id="pm-val-identity">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-identity" data-dim="identity">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Hvem er jeg egentlig?"</span><span class="pm-slider-end right">"Jeg er mig over tid"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-changeTol">
+                <div class="pm-slider-header"><span class="pm-slider-label">Forandringstolerance</span><span class="pm-slider-value" id="pm-val-changeTol">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-changeTol" data-dim="changeTol">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Stabilitetssøgning</span><span class="pm-slider-end right">Novitetssøgning</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 2: EMPATI + MENTALISERING -->
+          <div class="pm-panel">
+            <div class="pm-panel-title">Empati & Mentalisering</div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#8a5c3a">Empati — bipolare akser (midten = ligegyldighed)</div>
+              <div class="pm-slider-row bipolar" id="pm-row-sufferResponse">
+                <div class="pm-slider-header"><span class="pm-slider-label">Respons på andres lidelse</span><span class="pm-slider-value" id="pm-val-sufferResponse">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-sufferResponse" data-dim="sufferResponse">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Fryd / Schadenfreude</span><span class="pm-slider-end right">Medfølende sorg</span></div>
+              </div>
+              <div class="pm-slider-row bipolar" id="pm-row-joyResponse">
+                <div class="pm-slider-header"><span class="pm-slider-label">Respons på andres lykke</span><span class="pm-slider-value" id="pm-val-joyResponse">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-joyResponse" data-dim="joyResponse">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Misundelse / Gluckschmerz</span><span class="pm-slider-end right">Empatisk glæde / Mudita</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-cogEmpathy">
+                <div class="pm-slider-header"><span class="pm-slider-label">Kognitiv empati</span><span class="pm-slider-value" id="pm-val-cogEmpathy">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-cogEmpathy" data-dim="cogEmpathy">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Forstår ikke andres logik</span><span class="pm-slider-end right">Modellerer andres perspektiv præcist</span></div>
+              </div>
+            </div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#3d5e8a">Mentalisering</div>
+              <div class="pm-slider-row" id="pm-row-selfMent">
+                <div class="pm-slider-header"><span class="pm-slider-label">Selv-mentalisering</span><span class="pm-slider-value" id="pm-val-selfMent">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-selfMent" data-dim="selfMent">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Jeg er bare sådan"</span><span class="pm-slider-end right">"Jeg tror jeg føler X fordi..."</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-otherMent">
+                <div class="pm-slider-header"><span class="pm-slider-label">Andre-mentalisering</span><span class="pm-slider-value" id="pm-val-otherMent">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-otherMent" data-dim="otherMent">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Han er vred" (faktum)</span><span class="pm-slider-end right">"Jeg tror han er vred"</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 3: RELATIONEL STRUKTUR -->
+          <div class="pm-panel">
+            <div class="pm-panel-title">Relationel Struktur</div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#4a7c6f">Relationel struktur</div>
+              <div class="pm-slider-row" id="pm-row-selfBoundary">
+                <div class="pm-slider-header"><span class="pm-slider-label">Selvafgrænsning</span><span class="pm-slider-value" id="pm-val-selfBoundary">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-selfBoundary" data-dim="selfBoundary">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Sammensmeltning / fusion</span><span class="pm-slider-end right">Klare grænser / adskilt selv</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-affectiveOpenness">
+                <div class="pm-slider-header"><span class="pm-slider-label">Affektiv åbenhed</span><span class="pm-slider-value" id="pm-val-affectiveOpenness">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-affectiveOpenness" data-dim="affectiveOpenness">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Afskåret / lukket</span><span class="pm-slider-end right">Åben / tilgængelig</span></div>
+              </div>
+              <p class="pm-slider-note" style="margin-bottom:0.6rem;">Høj selvafgrænsning + høj affektiv åbenhed = sund synergi. Lav + høj = sammensmeltning.</p>
+              <div class="pm-slider-row" id="pm-row-dominance">
+                <div class="pm-slider-header"><span class="pm-slider-label">Dominansorientering</span><span class="pm-slider-value" id="pm-val-dominance">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-dominance" data-dim="dominance">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Flad orientering</span><span class="pm-slider-end right">Hierarkisøgende</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-normative">
+                <div class="pm-slider-header"><span class="pm-slider-label">Normativ orientering</span><span class="pm-slider-value" id="pm-val-normative">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-normative" data-dim="normative">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Instrumentel</span><span class="pm-slider-end right">Intrinsisk bindende</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-zeroSum">
+                <div class="pm-slider-header"><span class="pm-slider-label">Nulsums-perception</span><span class="pm-slider-value" id="pm-val-zeroSum">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-zeroSum" data-dim="zeroSum">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Der er nok til alle</span><span class="pm-slider-end right">Din gevinst er mit tab</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-enemyInversion">
+                <div class="pm-slider-header"><span class="pm-slider-label">Fjendskabs-inversion</span><span class="pm-slider-value" id="pm-val-enemyInversion">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-enemyInversion" data-dim="enemyInversion">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Matricen ændres ikke</span><span class="pm-slider-end right">Fuld spejlvending for fjender</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 4: REGULERING -->
+          <div class="pm-panel">
+            <div class="pm-panel-title">Regulering & Kapacitet</div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#3d5e8a">Regulering og kapacitet</div>
+              <div class="pm-slider-row" id="pm-row-regulation">
+                <div class="pm-slider-header"><span class="pm-slider-label">Emotionel regulering</span><span class="pm-slider-value" id="pm-val-regulation">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-regulation" data-dim="regulation">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Tsunami"</span><span class="pm-slider-end right">"Føler det, men styret"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-ambivalence">
+                <div class="pm-slider-header"><span class="pm-slider-label">Ambivalenstolerance</span><span class="pm-slider-value" id="pm-val-ambivalence">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-ambivalence" data-dim="ambivalence">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Alt eller intet"</span><span class="pm-slider-end right">"Godt og skidt på én gang"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-agency">
+                <div class="pm-slider-header"><span class="pm-slider-label">Agency</span><span class="pm-slider-value" id="pm-val-agency">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-agency" data-dim="agency">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Livet sker for mig"</span><span class="pm-slider-end right">"Jeg former det næste"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-temporal">
+                <div class="pm-slider-header"><span class="pm-slider-label">Temporal orientering</span><span class="pm-slider-value" id="pm-val-temporal">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-temporal" data-dim="temporal">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Øjeblikkelig tilfredsstillelse</span><span class="pm-slider-end right">Langsigtet planlægning</span></div>
+              </div>
+            </div>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#c4553a">MOF/LOF meta-dimension</div>
+              <div class="pm-slider-row" id="pm-row-mofLof">
+                <div class="pm-slider-header"><span class="pm-slider-label">MOF–LOF kongruens</span><span class="pm-slider-value" id="pm-val-mofLof">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-mofLof" data-dim="mofLof">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Narrativ ≠ drivkraft</span><span class="pm-slider-end right">Selvmodel matcher adfærd</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 5: AFFEKTIVE TILSTANDSPARAMETRE -->
+          <div class="pm-panel">
+            <div class="pm-panel-title">Affektive Tilstandsparametre</div>
+            <p class="pm-slider-note" style="margin-bottom:0.8rem;">Disse er tilstande — ikke strukturelle kapaciteter. De svinger med energitilførsel og baseline-konfiguration.</p>
+            <div class="pm-dim-group">
+              <div class="pm-dim-group-label" style="color:#5a6e3a">Affektive tilstande</div>
+              <div class="pm-slider-row bipolar" id="pm-row-valence">
+                <div class="pm-slider-header"><span class="pm-slider-label">Valens</span><span class="pm-slider-value" id="pm-val-valence">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-valence" data-dim="valence">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Lidelse</span><span class="pm-slider-end right">Eufori</span></div>
+              </div>
+              <div class="pm-slider-row bipolar" id="pm-row-satisfaction">
+                <div class="pm-slider-header"><span class="pm-slider-label">Tilfredshed</span><span class="pm-slider-value" id="pm-val-satisfaction">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-satisfaction" data-dim="satisfaction">
+                <div class="pm-slider-ends"><span class="pm-slider-end">"Jeg mangler alt"</span><span class="pm-slider-end right">"Jeg har nok"</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-arousal">
+                <div class="pm-slider-header"><span class="pm-slider-label">Arousal</span><span class="pm-slider-value" id="pm-val-arousal">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-arousal" data-dim="arousal">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Lav aktivering</span><span class="pm-slider-end right">Høj aktivering</span></div>
+              </div>
+              <div class="pm-slider-row" id="pm-row-returnSpeed">
+                <div class="pm-slider-header"><span class="pm-slider-label">Return to baseline</span><span class="pm-slider-value" id="pm-val-returnSpeed">R5 | S5</span></div>
+                <input type="range" min="0" max="10" value="5" class="pm-range" id="pm-returnSpeed" data-dim="returnSpeed">
+                <div class="pm-slider-ends"><span class="pm-slider-end">Minutter</span><span class="pm-slider-end right">Døgn</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL 6: DARK TRIAD + MATRICE -->
+          <div class="pm-panel">
+            <div class="pm-panel-title">Dark Triad & Relationel Matrice</div>
+            <div style="margin-bottom:1rem;">
+              <div class="pm-dim-group-label" style="color:#c4553a; margin-bottom:0.5rem;">Dark Triad — beregnet fra konfigurationen</div>
+              <div class="pm-dark-triad">
+                <div class="pm-dt-item"><div class="pm-dt-label">Narcissisme</div><div class="pm-dt-score" id="pm-dt-narc">–</div><div class="pm-dt-bar-track"><div class="pm-dt-bar-fill" id="pm-dt-narc-bar" style="width:0%"></div></div></div>
+                <div class="pm-dt-item"><div class="pm-dt-label">Machiavell.</div><div class="pm-dt-score" id="pm-dt-mach">–</div><div class="pm-dt-bar-track"><div class="pm-dt-bar-fill" id="pm-dt-mach-bar" style="width:0%"></div></div></div>
+                <div class="pm-dt-item"><div class="pm-dt-label">Psykopati</div><div class="pm-dt-score" id="pm-dt-psyc">–</div><div class="pm-dt-bar-track"><div class="pm-dt-bar-fill" id="pm-dt-psyc-bar" style="width:0%"></div></div></div>
+              </div>
+            </div>
+            <div>
+              <div class="pm-dim-group-label" style="color:#8a5c3a; margin-bottom:0.5rem;">Relationel matrice — allieret</div>
+              <div class="pm-matrix-container">
+                <table class="pm-matrix"><tr><td class="corner"></td><th>Empatisk glæde</th><th>Ligegyldighed</th><th>Misundelse</th></tr>
+                <tr><th class="row-header">Sorg</th><td id="pm-m-sorg-glad">Sund person</td><td id="pm-m-sorg-lig">Depressiv</td><td id="pm-m-sorg-mis">Bitter / Ressentiment</td></tr>
+                <tr><th class="row-header">Ligegyldighed</th><td id="pm-m-lig-glad">Pollyanna</td><td id="pm-m-lig-lig">Skizoid</td><td id="pm-m-lig-mis">Kompetitiv</td></tr>
+                <tr><th class="row-header">Fryd</th><td id="pm-m-fryd-glad">Affektiv smitte</td><td id="pm-m-fryd-lig">Psykopat</td><td id="pm-m-fryd-mis">Malignant narcissist</td></tr></table>
+              </div>
+              <p class="pm-matrix-note" id="pm-matrix-position-text">Justér sliders for at se aktiv position.</p>
+            </div>
+            <div style="margin-top:1rem;">
+              <div class="pm-dim-group-label" style="color:#3d5e8a; margin-bottom:0.5rem;">Relationel matrice — fjende <span style="font-size:0.58rem; color:#8a7d68; font-style:italic;">(moduleret af fjendskabs-inversion)</span></div>
+              <div class="pm-matrix-container">
+                <table class="pm-matrix"><tr><td class="corner"></td><th>Empatisk glæde</th><th>Ligegyldighed</th><th>Misundelse</th></tr>
+                <tr><th class="row-header">Sorg</th><td id="pm-e-sorg-glad">Stockholm / Dalai Lama</td><td id="pm-e-sorg-lig">Tilgivelse uden glemsel</td><td id="pm-e-sorg-mis">Misundelig ressentiment</td></tr>
+                <tr><th class="row-header">Ligegyldighed</th><td id="pm-e-lig-glad">Tilgivet fjende</td><td id="pm-e-lig-lig">Sund distance</td><td id="pm-e-lig-mis">Konkurrencementalitet</td></tr>
+                <tr><th class="row-header">Fryd</th><td id="pm-e-fryd-glad">Affektiv dissociation</td><td id="pm-e-fryd-lig">Dracula</td><td id="pm-e-fryd-mis">Nulsums-tribalisme</td></tr></table>
+              </div>
+              <p class="pm-matrix-note" id="pm-enemy-matrix-text">Fjende-position beregnes fra allieret-position + fjendskabs-inversion.</p>
+            </div>
+          </div>
+
+          <!-- RAPPORT -->
+          <div class="pm-panel pm-full">
+            <div class="pm-panel-title">Rapport</div>
+            <div class="pm-report-content">
+              <div class="pm-radar-wrapper">
+                <canvas id="pmRadar" width="300" height="300"></canvas>
+                <div style="margin-top:0.8rem; width:100%;" id="pmDimBars"></div>
+              </div>
+              <div class="pm-report-text">
+                <div class="pm-profile-label" id="pmProfileLabel">Manuelt konfigureret</div>
+                <h2 id="pmReportTitle">Profil</h2>
+                <div class="pm-divider"></div>
+                <div id="pmReportBody"></div>
+              </div>
+            </div>
+          </div>
+        </div><!-- end pm-layout -->
+      </div><!-- end pm-container -->
+    </div><!-- end pm-overlay -->
+
+    <!-- PM Compare Modal -->
+    <div class="pm-compare-modal" id="pmCompareModal">
+      <div class="pm-compare-card">
+        <div class="pm-compare-card-header">
+          <div class="pm-compare-card-title">Sammenlign profiler</div>
+          <div class="pm-compare-controls">
+            <span class="pm-compare-hint">Vis:</span>
+            <select id="pmCompareMode"><option value="rest">Rest (grøn)</option><option value="stress">Stress (rød)</option></select>
+            <span class="pm-compare-hint">Layout:</span>
+            <select id="pmCompareLayout"><option value="grid">Side om side</option><option value="overlay">Ovenpå hinanden</option></select>
+            <button class="pm-preset-btn" onclick="pmCloseCompare()">Luk</button>
+          </div>
+        </div>
+        <div class="pm-compare-hint" style="margin-bottom:0.6rem;">Vælg aktører/operatør at sammenligne. Vælg præcis 2 for en natursproglig analyse.</div>
+        <div class="pm-compare-analysis" id="pmCompareAnalysis" style="display:none; margin-bottom:0.9rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:0.8rem; flex-wrap:wrap;">
+            <div class="pm-compare-card-title" style="border:0; margin:0; padding:0;">Analyse (2 profiler)</div>
+            <button class="pm-preset-btn" id="pmCompareAnalyzeBtn" onclick="pmRenderCompareAnalysis()" disabled>Analyser valgte</button>
+          </div>
+          <div class="pm-compare-hint" id="pmCompareAnalysisHint" style="margin-top:0.35rem;">Vælg præcis 2 profiler.</div>
+          <div id="pmCompareAnalysisBody" style="margin-top:0.65rem;"></div>
+        </div>
+        <div class="pm-compare-list" id="pmCompareList"></div>
+        <div class="pm-compare-grid" id="pmCompareGrid"></div>
+        <div class="pm-compare-overlay" id="pmCompareOverlay" style="display:none;">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.8rem; flex-wrap:wrap; margin-bottom:0.55rem;">
+            <div class="pm-compare-card-title" id="pmCompareOverlayTitle">Overlay</div>
+            <div id="pmCompareLegend" style="display:flex; flex-wrap:wrap; gap:0.35rem 0.55rem;"></div>
+          </div>
+          <div class="pm-compare-overlay-canvaswrap">
+            <canvas id="pmCompareOverlayCanvas" width="720" height="420"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
 <script>
 // ═══════════════════════════════════════
 // STATE
@@ -651,6 +1138,113 @@ const TAG_DEFS = [
 let actors = [
     { id: 'a1', name: 'Line', children: [] }
 ];
+
+let personalityData = {}; // name -> { rest: {attachment:5,...}, stress: {attachment:5,...} }
+let currentPMTarget = null; // name of person whose profile is open
+let pmActivePreset = null;
+
+const PERSONALITY_DIMS = {
+  attachment:       { label: 'Tilknytning' },
+  affect:           { label: 'Affekttone' },
+  activation:       { label: 'Aktivering' },
+  selfworth:        { label: 'Selvværd' },
+  identity:         { label: 'Identitet' },
+  changeTol:        { label: 'Forandringstol.' },
+  sufferResponse:   { label: 'Resp. lidelse' },
+  joyResponse:      { label: 'Resp. lykke' },
+  cogEmpathy:       { label: 'Kogn. empati' },
+  selfMent:         { label: 'Selv-ment.' },
+  otherMent:        { label: 'Andre-ment.' },
+  selfBoundary:     { label: 'Selvafgrænsning' },
+  affectiveOpenness:{ label: 'Affektiv åbenhed' },
+  dominance:        { label: 'Dominans' },
+  normative:        { label: 'Normativ orient.' },
+  zeroSum:          { label: 'Nulsums-perc.' },
+  enemyInversion:   { label: 'Fjendskabs-inv.' },
+  regulation:       { label: 'Regulering' },
+  ambivalence:      { label: 'Ambivalens' },
+  agency:           { label: 'Agency' },
+  temporal:         { label: 'Temporal orient.' },
+  mofLof:           { label: 'MOF-LOF kongr.' },
+  valence:          { label: 'Valens' },
+  satisfaction:     { label: 'Tilfredshed' },
+  arousal:          { label: 'Arousal' },
+  returnSpeed:      { label: 'Return to base.' },
+};
+
+const PM_DIM_KEYS = Object.keys(PERSONALITY_DIMS);
+
+const PM_PRESETS = [
+  { category: 'Personlighedsforstyrrelser', items: [
+    { label: 'Borderline',     values: { attachment:1,selfBoundary:2,affectiveOpenness:9,selfworth:1,identity:1,affect:1,activation:5,changeTol:3,sufferResponse:8,joyResponse:7,cogEmpathy:3,selfMent:2,otherMent:3,dominance:3,normative:5,zeroSum:4,enemyInversion:8,regulation:1,ambivalence:1,agency:2,temporal:2,mofLof:3,valence:2,satisfaction:1,arousal:8,returnSpeed:1 } },
+    { label: 'Narcissistisk',  values: { attachment:2,selfBoundary:8,affectiveOpenness:2,selfworth:2,identity:4,affect:3,activation:6,changeTol:4,sufferResponse:2,joyResponse:2,cogEmpathy:7,selfMent:2,otherMent:5,dominance:9,normative:2,zeroSum:8,enemyInversion:7,regulation:4,ambivalence:2,agency:8,temporal:5,mofLof:1,valence:5,satisfaction:3,arousal:6,returnSpeed:4 } },
+    { label: 'Kovert narc.',   values: { attachment:2,selfBoundary:6,affectiveOpenness:3,selfworth:1,identity:3,affect:2,activation:4,changeTol:3,sufferResponse:3,joyResponse:2,cogEmpathy:6,selfMent:3,otherMent:4,dominance:6,normative:2,zeroSum:7,enemyInversion:6,regulation:3,ambivalence:2,agency:5,temporal:4,mofLof:2,valence:3,satisfaction:2,arousal:5,returnSpeed:3 } },
+    { label: 'Antisocial',     values: { attachment:2,selfBoundary:8,affectiveOpenness:2,selfworth:5,identity:5,affect:4,activation:6,changeTol:6,sufferResponse:2,joyResponse:5,cogEmpathy:7,selfMent:3,otherMent:6,dominance:7,normative:1,zeroSum:6,enemyInversion:4,regulation:3,ambivalence:4,agency:7,temporal:2,mofLof:3,valence:4,satisfaction:4,arousal:6,returnSpeed:5 } },
+    { label: 'Paranoid',       values: { attachment:1,selfBoundary:8,affectiveOpenness:2,selfworth:3,identity:5,affect:2,activation:5,changeTol:2,sufferResponse:3,joyResponse:2,cogEmpathy:4,selfMent:3,otherMent:2,dominance:5,normative:4,zeroSum:8,enemyInversion:9,regulation:3,ambivalence:2,agency:5,temporal:4,mofLof:3,valence:3,satisfaction:2,arousal:7,returnSpeed:2 } },
+    { label: 'Skizoid',        values: { attachment:3,selfBoundary:9,affectiveOpenness:1,selfworth:4,identity:5,affect:4,activation:1,changeTol:5,sufferResponse:5,joyResponse:5,cogEmpathy:5,selfMent:5,otherMent:4,dominance:3,normative:5,zeroSum:3,enemyInversion:3,regulation:6,ambivalence:5,agency:5,temporal:6,mofLof:6,valence:4,satisfaction:5,arousal:2,returnSpeed:7 } },
+    { label: 'Histrionisk',    values: { attachment:2,selfBoundary:2,affectiveOpenness:9,selfworth:2,identity:2,affect:3,activation:8,changeTol:6,sufferResponse:7,joyResponse:8,cogEmpathy:3,selfMent:2,otherMent:3,dominance:5,normative:3,zeroSum:4,enemyInversion:5,regulation:2,ambivalence:2,agency:5,temporal:2,mofLof:2,valence:5,satisfaction:2,arousal:9,returnSpeed:2 } },
+    { label: 'Afhængig',       values: { attachment:1,selfBoundary:1,affectiveOpenness:9,selfworth:1,identity:2,affect:2,activation:4,changeTol:2,sufferResponse:7,joyResponse:8,cogEmpathy:4,selfMent:3,otherMent:4,dominance:1,normative:6,zeroSum:3,enemyInversion:4,regulation:3,ambivalence:3,agency:1,temporal:2,mofLof:4,valence:3,satisfaction:2,arousal:5,returnSpeed:3 } },
+    { label: 'OCD',            values: { attachment:4,selfBoundary:7,affectiveOpenness:5,selfworth:3,identity:6,affect:4,activation:6,changeTol:2,sufferResponse:5,joyResponse:4,cogEmpathy:6,selfMent:6,otherMent:5,dominance:4,normative:8,zeroSum:4,enemyInversion:4,regulation:5,ambivalence:3,agency:6,temporal:7,mofLof:5,valence:4,satisfaction:3,arousal:6,returnSpeed:5 } },
+  ]},
+  { category: 'Personlighedstyper', items: [
+    { label: 'Moden',          values: { attachment:8,selfBoundary:8,affectiveOpenness:8,selfworth:8,identity:8,affect:7,activation:6,changeTol:7,sufferResponse:8,joyResponse:8,cogEmpathy:8,selfMent:8,otherMent:8,dominance:5,normative:8,zeroSum:2,enemyInversion:4,regulation:8,ambivalence:8,agency:8,temporal:8,mofLof:9,valence:7,satisfaction:7,arousal:5,returnSpeed:7 } },
+    { label: 'Sårbar',         values: { attachment:4,selfBoundary:6,affectiveOpenness:6,selfworth:3,identity:4,affect:3,activation:5,changeTol:4,sufferResponse:7,joyResponse:6,cogEmpathy:5,selfMent:4,otherMent:5,dominance:3,normative:6,zeroSum:4,enemyInversion:5,regulation:4,ambivalence:4,agency:4,temporal:4,mofLof:5,valence:4,satisfaction:3,arousal:6,returnSpeed:4 } },
+    { label: 'Kontrollerende', values: { attachment:3,selfBoundary:7,affectiveOpenness:4,selfworth:4,identity:6,affect:4,activation:6,changeTol:3,sufferResponse:4,joyResponse:3,cogEmpathy:6,selfMent:4,otherMent:5,dominance:8,normative:4,zeroSum:6,enemyInversion:6,regulation:5,ambivalence:3,agency:8,temporal:6,mofLof:4,valence:4,satisfaction:4,arousal:6,returnSpeed:5 } },
+    { label: 'Jacob (underholdning)', values: { attachment:6,selfBoundary:8,affectiveOpenness:6,selfworth:6,identity:9,affect:4,activation:3,changeTol:7,sufferResponse:8,joyResponse:6,cogEmpathy:8,selfMent:9,otherMent:7,dominance:6,normative:8,zeroSum:3,enemyInversion:6,regulation:5,ambivalence:7,agency:9,temporal:8,mofLof:7,valence:4,satisfaction:4,arousal:7,returnSpeed:3 } },
+    { label: 'Line (underholdning)', values: { attachment:3,selfBoundary:3,affectiveOpenness:7,selfworth:4,identity:5,affect:3,activation:7,changeTol:4,sufferResponse:6,joyResponse:5,cogEmpathy:5,selfMent:3,otherMent:4,dominance:7,normative:5,zeroSum:6,enemyInversion:7,regulation:3,ambivalence:3,agency:6,temporal:4,mofLof:3,valence:5,satisfaction:4,arousal:8,returnSpeed:2 } },
+    { label: 'Nulstil',        values: { attachment:5,selfBoundary:5,affectiveOpenness:5,selfworth:5,identity:5,affect:5,activation:5,changeTol:5,sufferResponse:5,joyResponse:5,cogEmpathy:5,selfMent:5,otherMent:5,dominance:5,normative:5,zeroSum:5,enemyInversion:5,regulation:5,ambivalence:5,agency:5,temporal:5,mofLof:5,valence:5,satisfaction:5,arousal:5,returnSpeed:5 } },
+  ]}
+];
+
+const PM_DIM_GROUPS = [
+  { name: 'Fundament', keys: ['attachment','affect','activation'] },
+  { name: 'Selvsystem', keys: ['selfworth','identity','changeTol'] },
+  { name: 'Empati', keys: ['sufferResponse','joyResponse','cogEmpathy'] },
+  { name: 'Mentalisering', keys: ['selfMent','otherMent'] },
+  { name: 'Relationel struktur', keys: ['selfBoundary','affectiveOpenness','dominance','normative','zeroSum','enemyInversion'] },
+  { name: 'Regulering & kapacitet', keys: ['regulation','ambivalence','agency','temporal','mofLof'] },
+  { name: 'Tilstande', keys: ['valence','satisfaction','arousal','returnSpeed'] },
+];
+
+const PM_DIM_ENDS = {
+  attachment: ['"Alle forlader mig"','"Jeg er okay alene"'],
+  affect: ['Skam/frygt/tomhed','Grundlæggende ro'],
+  activation: ['Social udtømning','Social genopladning'],
+  selfworth: ['"Jeg er ingenting"','"Jeg er nok"'],
+  identity: ['Fragmenteret','Sammenhængende'],
+  changeTol: ['Stabilitetssøgning','Novitetssøgning'],
+  sufferResponse: ['Fryd/Schadenfreude','Medfølende sorg'],
+  joyResponse: ['Misundelse/Gluckschmerz','Empatisk glæde/Mudita'],
+  cogEmpathy: ['Forstår ikke andres logik','Præcis perspektivmodellering'],
+  selfMent: ['"Jeg er bare sådan"','"Jeg tror jeg føler X fordi..."'],
+  otherMent: ['"Han er vred" (faktum)','"Jeg tror han er vred"'],
+  selfBoundary: ['Fusion','Klare grænser'],
+  affectiveOpenness: ['Afskåret','Åben/tilgængelig'],
+  dominance: ['Flad orientering','Hierarkisøgende'],
+  normative: ['Instrumentel','Intrinsisk bindende'],
+  zeroSum: ['Der er nok til alle','Din gevinst er mit tab'],
+  enemyInversion: ['Ingen ændring','Fuld spejlvending'],
+  regulation: ['"Tsunami"','"Føler det, men styret"'],
+  ambivalence: ['"Alt eller intet"','"Godt og skidt"'],
+  agency: ['"Livet sker for mig"','"Jeg former det næste"'],
+  temporal: ['Øjeblikkelig tilfredsstillelse','Langsigtet planlægning'],
+  mofLof: ['Narrativ ≠ drivkraft','Selvmodel matcher adfærd'],
+  valence: ['Lidelse','Eufori'],
+  satisfaction: ['"Jeg mangler alt"','"Jeg har nok"'],
+  arousal: ['Lav aktivering','Høj aktivering'],
+  returnSpeed: ['Minutter','Døgn'],
+};
+
+function pmDefaultProfile() {
+  const rest = {}, stress = {};
+  PM_DIM_KEYS.forEach(k => { rest[k] = 5; stress[k] = 5; });
+  return { rest, stress };
+}
+
+function pmEnsure(name) {
+  if (!personalityData[name]) personalityData[name] = pmDefaultProfile();
+  return personalityData[name];
+}
 
 let _id = 100;
 function uid(p) { return p + '_' + (_id++) + '_' + Date.now(); }
