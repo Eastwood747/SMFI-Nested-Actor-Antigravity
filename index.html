@@ -1312,17 +1312,13 @@ function pmUpdateReadout(id) {
 }
 
 function pmUpdateDim(id, val, mode='rest') {
-  if (!pmState[id]) return;
-  const v = clamp01to10(val);
-  if (mode !== 'rest' && mode !== 'stress') mode = 'rest';
-  pmState[id][mode] = v;
+    if (!pmState[id]) return;
+    const v = clamp01to10(val);
+    if (mode !== 'rest' && mode !== 'stress') mode = 'rest';
+    pmState[id][mode] = v;
 
-  // Optional per-mode readouts (not present in this HTML) should not crash
-  const perMode = document.getElementById(`val-${id}-${mode}`);
-  if (perMode) perMode.textContent = String(v);
-
-  pmUpdateReadout(id);
-  
+    pmUpdateReadout(id);
+    pmRenderAll(); // Real-time update of radar, rapport, etc.
 }
 
 function pmApplyPreset(preset, btn) {
@@ -1538,7 +1534,7 @@ function pmDrawRadar() {
     ctx.font = '500 7px DM Mono, monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(pmState[keys[i]].label, lx, ly);
+    ctx.fillText(PERSONALITY_DIMS[keys[i]].label, lx, ly);
   }
 
   function drawPoly(mode, stroke, fill) {
@@ -1666,7 +1662,7 @@ function pmUpgradeToDualRange() {
     const key = inp.id;
     if (!pmState[key]) return;
 
-    const row = inp.closest('.slider-row');
+    const row = inp.closest('.pm-slider-row');
     if (!row) return;
     row.classList.add('dual');
 
@@ -1700,7 +1696,7 @@ function pmUpgradeToDualRange() {
         if (ev.button !== undefined && ev.button !== 0) return;
 
         // Promote active slider to top so the correct thumb keeps receiving events
-        const row = el.closest('.slider-row');
+        const row = el.closest('.pm-slider-row');
         if (row) {
           row.querySelectorAll('input[type=range]').forEach(rng => {
             rng.style.zIndex = (rng.dataset.mode === 'stress') ? '3' : '2';
