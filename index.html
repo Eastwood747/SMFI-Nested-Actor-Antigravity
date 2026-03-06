@@ -692,6 +692,13 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16"/><path d="M4 20l16-16"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="20" r="2"/><circle cx="4" cy="20" r="2"/><circle cx="20" cy="4" r="2"/></svg>
                     Konflikter
                 </button>
+                <button class="chat-toggle-btn" id="pmBtn" onclick="openPersonality()" style="background:#5a6e3a">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Personlighed
+                </button>
                 <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     AI Chat
@@ -2341,30 +2348,7 @@ function runTests() {
 
 
 
-// Auto-apply Jacob preset on load for testing
-const jacobPresetGroup = PM_PRESETS.find(g => g.category === 'Personlighedstyper');
-if (jacobPresetGroup) {
-  const jacobPreset = jacobPresetGroup.items.find(p => p.label === 'Jacob (underholdning)');
-  if (jacobPreset) {
-    pmActivePreset = jacobPreset.label;
-    Object.entries(jacobPreset.values).forEach(([k, v0]) => {
-      if (!pmState[k]) return;
-      const vv = clamp01to10(v0);
-      pmState[k].rest = vv;
-      pmState[k].stress = vv;
-
-      const r = document.getElementById(`${k}-rest`);
-      const s = document.getElementById(`${k}-stress`);
-      if (r) { r.value = vv; r.style.setProperty('--val', vv * 10); }
-      if (s) { s.value = vv; s.style.setProperty('--val', vv * 10); }
-      pmUpdateReadout(k);
-    });
-  }
-}
-
-
-
-
+// Auto-apply removed
 
 // ----------------------------
 
