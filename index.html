@@ -3180,6 +3180,18 @@ let chatApiContents = [];    // Gemini API contents array
 
 const CHAT_TOOLS = [{ functionDeclarations: [
     {
+        name: 'set_personality_profile',
+        description: 'Set personality dimensions for an actor (e.g. Line or Jacob). Dimensions are 0-10. Each dimension can have a "rest" and "stress" value.',
+        parameters: { type: 'OBJECT', properties: {
+            name: { type: 'STRING', description: 'Name of the actor/person' },
+            profile: { 
+                type: 'OBJECT', 
+                description: 'Object where keys are dimensions (attachment, affect, selfworth, etc.) and values are objects like {rest: 5, stress: 8}'
+            }
+        }, required: ['name', 'profile'] }
+    },
+
+    {
         name: 'get_full_state',
         description: 'Get complete snapshot of all actors, holons with their notes/content, and conflict tags in the SMFI model. Always call this before giving analysis.',
         parameters: { type: 'OBJECT', properties: {} }
@@ -3287,7 +3299,7 @@ REGLER:
 
 // Collect full state snapshot for AI
 function getFullState() {
-    const state = { operator: operatorName, actors: JSON.parse(JSON.stringify(actors)), holons: {} };
+    const state = { operator: operatorName, actors: JSON.parse(JSON.stringify(actors)), holons: {}, personality: personalityData };
     function collect(nesting, fa) {
         const owner = nesting.length > 0 ? nesting[nesting.length - 1] : operatorName;
         addH(state.holons, nesting, owner, '_Luc.mod.');
@@ -3370,6 +3382,22 @@ function execFn(name, args) {
             })(actors);
             if (ok) render();
             return { ok, msg: ok ? 'Renamed to "'+args.new_name+'"' : 'Not found' };
+        }
+        case 'set_personality_profile': {
+            const name = args.name;
+            const profile = args.profile;
+            const target = pmEnsure(name);
+            Object.entries(profile).forEach(([dim, vals]) => {
+                if (target[dim]) {
+                    if (vals.rest !== undefined) target[dim].rest = clamp01to10(vals.rest);
+                    if (vals.stress !== undefined) target[dim].stress = clamp01to10(vals.stress);
+                }
+            });
+            if (currentPMTarget === name) {
+                pmUpdateFromState();
+                pmRenderAll();
+            }
+            return { ok: true, msg: 'Updated personality for ' + name };
         }
         default:
             return { ok: false, msg: 'Unknown: '+name };
